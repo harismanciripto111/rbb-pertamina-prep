@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RBB Pertamina Prep - Latihan Soal Harian</title>
 <meta name="description" content="Website latihan soal harian RBB Pertamina - D3 Teknik Kimia Operator">
+<meta name="theme-color" content="#0f172a">
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--card2:#334155;--text:#e2e8f0;--text2:#94a3b8;--accent:#3b82f6;--accent2:#10b981;--danger:#ef4444;--warning:#f59e0b;--radius:12px;--shadow:0 4px 20px rgba(0,0,0,.3)}
 [data-theme=light]{--bg:#f1f5f9;--card:#ffffff;--card2:#e2e8f0;--text:#1e293b;--text2:#64748b;--shadow:0 4px 20px rgba(0,0,0,.08)}
@@ -148,6 +149,37 @@ a{color:var(--accent);text-decoration:none}
 .modal p{color:var(--text2);font-size:.9rem;margin-bottom:16px}
 .modal-btns{display:flex;gap:10px}
 .modal-btns button{flex:1;padding:12px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer}
+
+/* Responsive Breakpoints */
+@media(max-width:360px){
+  .container{padding:10px}
+  .hero h2{font-size:1.3rem}
+  .cat-grid{grid-template-columns:1fr;gap:8px}
+  .cat-card{padding:14px 12px}
+  .cat-card h3{font-size:.85rem}
+  .stats-row{grid-template-columns:1fr 1fr;gap:8px}
+  .stat-box .num{font-size:1.1rem}
+  .question-card .q-text{font-size:.9rem}
+  .option{padding:10px 12px;gap:8px}
+}
+@media(min-width:768px){
+  .container{max-width:900px}
+  .cat-grid{grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .hero h2{font-size:1.8rem}
+  .question-card .q-text{font-size:1.05rem}
+  .result-breakdown{grid-template-columns:1fr 1fr 1fr 1fr}
+  .stats-row{gap:16px}
+}
+@media(min-width:1024px){
+  .container{max-width:1100px}
+  .hero h2{font-size:2rem}
+  .hero p{font-size:1.05rem}
+  .cat-card{padding:24px 20px}
+  .cat-card h3{font-size:1.05rem}
+  .stat-box .num{font-size:1.6rem}
+  .question-card{padding:24px}
+  .option{padding:16px 18px}
+}
 </style>
 </head>
 <body>
@@ -431,13 +463,13 @@ a{color:var(--accent);text-decoration:none}
     <p id="modal-text">Yakin ingin keluar?</p>
     <div class="modal-btns">
       <button style="background:var(--card2);color:var(--text)" onclick="closeModal()">Batal</button>
-      <button id="modal-confirm" style="background:var(--danger);color:#fff" onclick="">Ya</button>
+      <button id="modal-confirm" style="background:var(--danger);color:#fff">Ya</button>
     </div>
   </div>
 </div>
 
 <!-- Bottom Navigation -->
-<div class="bottom-nav">
+<div class="bottom-nav" id="bottom-nav">
   <div class="nav-item active" onclick="goHome()" id="nav-home"><span class="nav-icon">&#127968;</span>Home</div>
   <div class="nav-item" onclick="showPage('stats')" id="nav-stats"><span class="nav-icon">&#128202;</span>Statistik</div>
   <div class="nav-item" onclick="showPage('cheatsheet')" id="nav-cheatsheet"><span class="nav-icon">&#128218;</span>Materi</div>
@@ -623,12 +655,13 @@ let timeLeft = 60;
 let quizStartTime = 0;
 let quizAnswers = [];
 const STORAGE_KEY = 'rbb_prep_data';
+const CAT_NAMES = {twk:'TWK',tiu:'TIU',tkp:'TKP',akhlak:'AKHLAK',tkb:'TKB Teknik Kimia',daily:'Latihan Harian'};
 
 // ===== STORAGE =====
 function getData(){
   try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||{history:[],streak:0,lastDate:'',theme:'dark'}}catch(e){return{history:[],streak:0,lastDate:'',theme:'dark'}}
 }
-function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}
+function saveData(d){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}catch(e){console.error('Failed to save data:',e)}}
 
 // ===== THEME =====
 function toggleTheme(){
@@ -647,15 +680,40 @@ function loadTheme(){
 
 // ===== NAVIGATION =====
 function showPage(id){
+  clearInterval(timerInterval);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const navMap={home:'nav-home',stats:'nav-stats',cheatsheet:'nav-cheatsheet'};
   if(navMap[id])document.getElementById(navMap[id]).classList.add('active');
+  if(id!=='quiz'&&id!=='result'&&id!=='review'){document.getElementById('bottom-nav').style.display='flex';}
   if(id==='stats')renderStats();
   if(id==='home')updateHomeStats();
+  history.pushState({page:id},'',' ');
+  window.scrollTo(0,0);
 }
 function goHome(){showPage('home')}
+
+// ===== BROWSER HISTORY =====
+window.addEventListener('popstate',function(e){
+  if(e.state&&e.state.page){
+    clearInterval(timerInterval);
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(e.state.page).classList.add('active');
+    const navMap={home:'nav-home',stats:'nav-stats',cheatsheet:'nav-cheatsheet'};
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    if(navMap[e.state.page])document.getElementById(navMap[e.state.page]).classList.add('active');
+    if(e.state.page!=='quiz'&&e.state.page!=='result'&&e.state.page!=='review'){document.getElementById('bottom-nav').style.display='flex';}
+    if(e.state.page==='stats')renderStats();
+    if(e.state.page==='home')updateHomeStats();
+  }else{
+    clearInterval(timerInterval);
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('home').classList.add('active');
+    document.getElementById('bottom-nav').style.display='flex';
+    updateHomeStats();
+  }
+});
 
 // ===== SHUFFLE =====
 function seededRandom(seed){let s=seed;return function(){s=(s*16807)%2147483647;return(s-1)/2147483646;}}
@@ -673,6 +731,7 @@ function startQuiz(cat){
   currentQuiz=shuffle(qs).slice(0,20);
   currentIdx=0;quizAnswers=[];answered=false;
   quizStartTime=Date.now();
+  document.getElementById('bottom-nav').style.display='none';
   showPage('quiz');
   renderQuestion();
 }
@@ -687,6 +746,7 @@ function startDaily(){
   currentQuiz=all.slice(0,20);
   currentIdx=0;quizAnswers=[];answered=false;
   quizStartTime=Date.now();
+  document.getElementById('bottom-nav').style.display='none';
   showPage('quiz');
   renderQuestion();
 }
@@ -697,10 +757,9 @@ function renderQuestion(){
   answered=false;
   const q=currentQuiz[currentIdx];
   const cat=q._cat||currentCategory;
-  const catNames={twk:'TWK',tiu:'TIU',tkp:'TKP',akhlak:'AKHLAK',tkb:'TKB Teknik Kimia',daily:'Harian'};
   document.getElementById('q-counter').textContent='Soal '+(currentIdx+1)+'/'+currentQuiz.length;
-  document.getElementById('q-progress').style.width=((currentIdx/currentQuiz.length)*100)+'%';
-  document.getElementById('q-cat').textContent=catNames[cat]||cat.toUpperCase();
+  document.getElementById('q-progress').style.width=(((currentIdx+1)/currentQuiz.length)*100)+'%';
+  document.getElementById('q-cat').textContent=CAT_NAMES[cat]||cat.toUpperCase();
   document.getElementById('q-label').textContent='Soal '+(currentIdx+1);
   document.getElementById('q-text').textContent=q.q;
   
@@ -708,9 +767,8 @@ function renderQuestion(){
   optDiv.innerHTML='';
   const letters='ABCDE';
   const isTKP=cat==='tkp';
-  const opts=isTKP?q.o:q.o;
   
-  opts.forEach((opt,i)=>{
+  q.o.forEach((opt,i)=>{
     const div=document.createElement('div');
     div.className='option';
     div.innerHTML='<span class="opt-letter">'+letters[i]+'</span><span>'+(isTKP?opt.t:opt)+'</span>';
@@ -745,7 +803,7 @@ function autoTimeout(){
   const q=currentQuiz[currentIdx];
   const cat=q._cat||currentCategory;
   const isTKP=cat==='tkp';
-  quizAnswers.push({qIdx:currentIdx,selected:-1,correct:isTKP?-1:q.c,score:isTKP?0:0,timeout:true});
+  quizAnswers.push({qIdx:currentIdx,selected:-1,correct:isTKP?-1:q.c,score:0,timeout:true});
   
   const opts=document.querySelectorAll('.option');
   opts.forEach((o,i)=>{
@@ -809,9 +867,8 @@ function nextQuestion(){
 function finishQuiz(){
   clearInterval(timerInterval);
   const cat=currentCategory;
-  const isTKP=cat==='tkp'||(cat==='daily'&&false);
   const totalTime=Math.round((Date.now()-quizStartTime)/1000);
-  
+
   let correctCount=0,totalScore=0,tkpTotal=0;
   quizAnswers.forEach(a=>{
     const q=currentQuiz[a.qIdx];
@@ -823,38 +880,55 @@ function finishQuiz(){
     }
     totalScore+=a.score;
   });
-  
+
   const totalQ=currentQuiz.length;
   const tkpCount=quizAnswers.filter(a=>{const q=currentQuiz[a.qIdx];return(q._cat||cat)==='tkp'}).length;
   const nonTkpCount=totalQ-tkpCount;
-  const pct=nonTkpCount>0?Math.round((correctCount/nonTkpCount)*100):0;
-  
+
+  // H6: Weighted average for daily mode with mixed categories
+  let displayPct;
+  if(cat==='tkp'||tkpCount===totalQ){
+    displayPct=Math.round((tkpTotal/(tkpCount*5))*100);
+  }else if(tkpCount>0&&nonTkpCount>0){
+    const nonTkpPct=(correctCount/nonTkpCount)*100;
+    const tkpPct=(tkpTotal/(tkpCount*5))*100;
+    displayPct=Math.round((nonTkpPct*nonTkpCount+tkpPct*tkpCount)/totalQ);
+  }else{
+    displayPct=nonTkpCount>0?Math.round((correctCount/nonTkpCount)*100):0;
+  }
+
   // Display
   const circle=document.getElementById('r-circle');
-  const displayPct=cat==='tkp'?Math.round((tkpTotal/(tkpCount*5))*100):(tkpCount>0&&nonTkpCount>0)?Math.round(((correctCount/nonTkpCount)*100+tkpTotal/(tkpCount*5)*100)/2):pct;
   circle.textContent=displayPct+'%';
   circle.className='score-circle '+(displayPct>=70?'score-high':displayPct>=50?'score-mid':'score-low');
-  
-  const catNames={twk:'TWK',tiu:'TIU',tkp:'TKP',akhlak:'AKHLAK',tkb:'TKB Teknik Kimia',daily:'Latihan Harian'};
+
   document.getElementById('r-title').textContent=displayPct>=70?'Bagus!':displayPct>=50?'Cukup Baik':'Perlu Latihan Lagi';
-  document.getElementById('r-subtitle').textContent=(catNames[cat]||cat)+' - '+totalQ+' Soal';
+  document.getElementById('r-subtitle').textContent=(CAT_NAMES[cat]||cat)+' - '+totalQ+' Soal';
   document.getElementById('r-correct').textContent=correctCount+(tkpCount>0?'/'+nonTkpCount:'');
-  document.getElementById('r-wrong').textContent=(nonTkpCount-correctCount);
+  // H7: Wrong count includes low-score TKP answers
+  const tkpWrong=quizAnswers.filter(a=>{const q=currentQuiz[a.qIdx];return(q._cat||cat)==='tkp'&&a.score<4}).length;
+  document.getElementById('r-wrong').textContent=(nonTkpCount-correctCount)+tkpWrong;
   const mins=Math.floor(totalTime/60);
   const secs=totalTime%60;
   document.getElementById('r-time').textContent=mins+':'+(secs<10?'0':'')+secs;
-  document.getElementById('r-score').textContent=tkpCount>0?tkpTotal+'/'+tkpCount*5:'-';
-  
+  // M12: Hide TKP score display for non-TKP quizzes
+  const scoreEl=document.getElementById('r-score');
+  if(tkpCount>0){scoreEl.textContent=tkpTotal+'/'+(tkpCount*5);scoreEl.parentElement.style.display='';}
+  else{scoreEl.parentElement.style.display='none';}
+
+  // Restore bottom nav
+  document.getElementById('bottom-nav').style.display='flex';
+
   // Save history
   const d=getData();
   const entry={date:new Date().toISOString(),cat:cat,total:totalQ,correct:correctCount,pct:displayPct,tkpScore:tkpTotal,time:totalTime};
   d.history.unshift(entry);
   if(d.history.length>50)d.history=d.history.slice(0,50);
-  
-  // Streak
-  const today=new Date().toDateString();
+
+  // M9: Streak with ISO date strings for locale independence
+  const today=new Date().toISOString().slice(0,10);
   if(d.lastDate!==today){
-    const yesterday=new Date(Date.now()-86400000).toDateString();
+    const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
     d.streak=(d.lastDate===yesterday)?d.streak+1:1;
     d.lastDate=today;
   }
@@ -928,13 +1002,13 @@ function renderStats(){
   const bars=document.getElementById('cat-bars');
   bars.innerHTML='';
   const cats=['twk','tiu','tkp','akhlak','tkb','daily'];
-  const catNames={twk:'TWK',tiu:'TIU',tkp:'TKP',akhlak:'AKHLAK',tkb:'TKB',daily:'Harian'};
+  // Using global CAT_NAMES
   cats.forEach(c=>{
     const catHistory=d.history.filter(h=>h.cat===c);
     if(catHistory.length===0)return;
     const avg=Math.round(catHistory.reduce((s,h)=>s+h.pct,0)/catHistory.length);
     const cls=avg>=70?'high':avg>=50?'mid':'low';
-    bars.innerHTML+='<div class="chart-bar"><span class="bar-label">'+catNames[c]+'</span><div class="bar-track"><div class="bar-fill '+cls+'" style="width:'+Math.max(avg,8)+'%">'+avg+'%</div></div></div>';
+    bars.innerHTML+='<div class="chart-bar"><span class="bar-label">'+(CAT_NAMES[c]||c.toUpperCase())+'</span><div class="bar-track"><div class="bar-fill '+cls+'" style="width:'+Math.max(avg,8)+'%">'+avg+'%</div></div></div>';
   });
   if(bars.innerHTML==='')bars.innerHTML='<p style="color:var(--text2);font-size:.9rem">Belum ada data</p>';
   
@@ -946,25 +1020,40 @@ function renderStats(){
     const date=new Date(h.date);
     const dateStr=date.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
     const timeStr=date.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-    const catName=(catNames[h.cat]||h.cat.toUpperCase());
+    const catName=(CAT_NAMES[h.cat]||h.cat.toUpperCase());
     list.innerHTML+='<div class="history-item"><div><div class="hi-info">'+catName+' - '+h.total+' soal</div><div class="hi-date">'+dateStr+' '+timeStr+'</div></div><div class="hi-score" style="color:'+(h.pct>=70?'var(--accent2)':h.pct>=50?'var(--warning)':'var(--danger)')+'">'+h.pct+'%</div></div>';
   });
 }
 
 // ===== MODAL =====
 function confirmQuit(){
+  clearInterval(timerInterval);
   document.getElementById('modal-title').textContent='Keluar Quiz?';
   document.getElementById('modal-text').textContent='Progress quiz ini akan hilang. Yakin keluar?';
-  document.getElementById('modal-confirm').onclick=()=>{clearInterval(timerInterval);closeModal();goHome();};
+  document.getElementById('modal-confirm').onclick=()=>{closeModal();document.getElementById('bottom-nav').style.display='flex';goHome();};
   document.getElementById('modal').classList.add('show');
 }
 function confirmReset(){
   document.getElementById('modal-title').textContent='Reset Data?';
   document.getElementById('modal-text').textContent='Semua riwayat latihan dan statistik akan dihapus. Yakin?';
-  document.getElementById('modal-confirm').onclick=()=>{localStorage.removeItem(STORAGE_KEY);closeModal();renderStats();};
+  document.getElementById('modal-confirm').onclick=()=>{localStorage.removeItem(STORAGE_KEY);closeModal();renderStats();updateHomeStats();};
   document.getElementById('modal').classList.add('show');
 }
-function closeModal(){document.getElementById('modal').classList.remove('show')}
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+  // M1: Resume timer if quiz is active and question not yet answered
+  if(document.getElementById('quiz').classList.contains('active')&&!answered&&timeLeft>0){startTimer();}
+}
+
+// M2: Click outside modal to close
+document.getElementById('modal').addEventListener('click',function(e){
+  if(e.target===this)closeModal();
+});
+
+// M3: Escape key to close modal
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&document.getElementById('modal').classList.contains('show')){closeModal();}
+});
 
 // ===== ACCORDION =====
 function toggleAccordion(el){
@@ -973,8 +1062,11 @@ function toggleAccordion(el){
 }
 
 // ===== INIT =====
-loadTheme();
-updateHomeStats();
+document.addEventListener('DOMContentLoaded',function(){
+  loadTheme();
+  updateHomeStats();
+  history.replaceState({page:'home'},'',' ');
+});
 </script>
 </body>
 </html>
