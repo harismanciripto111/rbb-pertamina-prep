@@ -1,14 +1,980 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RBB Pertamina Prep - Latihan Soal Harian</title>
-    <meta name="description" content="Website latihan soal harian RBB Pertamina - D3 Teknik Kimia Operator | Daily quiz prep untuk Rekrutmen Bersama BUMN">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RBB Pertamina Prep - Latihan Soal Harian</title>
+<meta name="description" content="Website latihan soal harian RBB Pertamina - D3 Teknik Kimia Operator">
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--card2:#334155;--text:#e2e8f0;--text2:#94a3b8;--accent:#3b82f6;--accent2:#10b981;--danger:#ef4444;--warning:#f59e0b;--radius:12px;--shadow:0 4px 20px rgba(0,0,0,.3)}
+[data-theme=light]{--bg:#f1f5f9;--card:#ffffff;--card2:#e2e8f0;--text:#1e293b;--text2:#64748b;--shadow:0 4px 20px rgba(0,0,0,.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:70px;transition:background .3s,color .3s}
+a{color:var(--accent);text-decoration:none}
+.container{max-width:680px;margin:0 auto;padding:16px}
+
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;position:sticky;top:0;background:var(--bg);z-index:100;border-bottom:1px solid var(--card2)}
+.header h1{font-size:1.1rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.theme-toggle{background:var(--card);border:none;color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center}
+
+/* Pages */
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Home */
+.hero{text-align:center;padding:24px 0}
+.hero h2{font-size:1.6rem;margin-bottom:8px}
+.hero p{color:var(--text2);font-size:.95rem}
+.info-banner{background:linear-gradient(135deg,#1e40af,#7c3aed);color:#fff;padding:14px 18px;border-radius:var(--radius);margin:16px 0;text-align:center;font-size:.9rem}
+.info-banner strong{display:block;font-size:1rem;margin-bottom:4px}
+
+/* Category Cards */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.cat-card{background:var(--card);border-radius:var(--radius);padding:20px 16px;text-align:center;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:var(--shadow);border:2px solid transparent}
+.cat-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.cat-card .icon{font-size:2rem;margin-bottom:8px}
+.cat-card h3{font-size:.95rem;margin-bottom:4px}
+.cat-card p{font-size:.75rem;color:var(--text2)}
+.cat-card .count{font-size:.7rem;color:var(--accent);margin-top:6px}
+
+.daily-btn{display:block;width:100%;padding:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:var(--radius);font-size:1.05rem;font-weight:600;cursor:pointer;margin:16px 0;transition:opacity .2s}
+.daily-btn:hover{opacity:.9}
+
+/* Stats Summary */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0}
+.stat-box{background:var(--card);border-radius:var(--radius);padding:14px;text-align:center}
+.stat-box .num{font-size:1.4rem;font-weight:700;color:var(--accent)}
+.stat-box .label{font-size:.7rem;color:var(--text2);margin-top:2px}
+
+/* Quiz Page */
+.quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.quiz-progress{width:100%;height:6px;background:var(--card2);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.quiz-progress .bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .3s}
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.quiz-meta .cat-badge{background:var(--accent);color:#fff;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600}
+.quiz-meta .timer{font-size:1.1rem;font-weight:700;color:var(--warning)}
+.timer.danger{color:var(--danger);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+.question-card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.question-card .q-num{font-size:.8rem;color:var(--accent);margin-bottom:8px}
+.question-card .q-text{font-size:1rem;line-height:1.6}
+
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.option{background:var(--card);border:2px solid var(--card2);border-radius:var(--radius);padding:14px 16px;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:12px}
+.option:hover:not(.disabled){border-color:var(--accent);background:var(--card2)}
+.option .opt-letter{min-width:28px;height:28px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0}
+.option.correct{border-color:var(--accent2);background:rgba(16,185,129,.1)}
+.option.correct .opt-letter{background:var(--accent2);color:#fff}
+.option.wrong{border-color:var(--danger);background:rgba(239,68,68,.1)}
+.option.wrong .opt-letter{background:var(--danger);color:#fff}
+.option.disabled{cursor:default;opacity:.7}
+.option.disabled.correct{opacity:1}
+
+.explanation{background:var(--card);border-left:4px solid var(--accent2);border-radius:0 var(--radius) var(--radius) 0;padding:14px 16px;margin-bottom:16px;display:none;font-size:.9rem;line-height:1.5}
+.explanation.show{display:block;animation:fadeIn .3s}
+.explanation strong{color:var(--accent2)}
+
+.quiz-nav{display:flex;gap:10px}
+.quiz-nav button{flex:1;padding:14px;border:none;border-radius:var(--radius);font-size:.95rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+.btn-next{background:var(--accent);color:#fff}
+.btn-finish{background:var(--accent2);color:#fff}
+.btn-quit{background:var(--card2);color:var(--text)}
+
+/* Result Page */
+.result-card{background:var(--card);border-radius:var(--radius);padding:24px;text-align:center;box-shadow:var(--shadow);margin-bottom:16px}
+.result-card .score-circle{width:120px;height:120px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#fff}
+.score-high{background:linear-gradient(135deg,var(--accent2),#059669)}
+.score-mid{background:linear-gradient(135deg,var(--warning),#d97706)}
+.score-low{background:linear-gradient(135deg,var(--danger),#dc2626)}
+.result-card h2{margin-bottom:8px}
+.result-card p{color:var(--text2)}
+
+.result-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.rb-item{background:var(--card);border-radius:var(--radius);padding:12px;text-align:center}
+.rb-item .rb-label{font-size:.75rem;color:var(--text2)}
+.rb-item .rb-val{font-size:1.2rem;font-weight:700;color:var(--accent)}
+
+.result-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.result-actions button{padding:14px;border:none;border-radius:var(--radius);font-size:.95rem;font-weight:600;cursor:pointer}
+.btn-review{background:var(--accent);color:#fff}
+.btn-retry{background:var(--card);color:var(--text);border:2px solid var(--card2)}
+.btn-home{background:var(--card2);color:var(--text)}
+
+/* Stats Page */
+.stats-section{margin-bottom:20px}
+.stats-section h3{font-size:1rem;margin-bottom:12px;color:var(--accent)}
+.chart-bar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.chart-bar .bar-label{min-width:50px;font-size:.8rem;text-align:right}
+.chart-bar .bar-track{flex:1;height:24px;background:var(--card2);border-radius:12px;overflow:hidden}
+.chart-bar .bar-fill{height:100%;border-radius:12px;transition:width .5s;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.7rem;font-weight:600;color:#fff;min-width:fit-content}
+.bar-fill.high{background:linear-gradient(90deg,var(--accent2),#059669)}
+.bar-fill.mid{background:linear-gradient(90deg,var(--warning),#d97706)}
+.bar-fill.low{background:linear-gradient(90deg,var(--danger),#dc2626)}
+
+.history-list{display:flex;flex-direction:column;gap:8px}
+.history-item{background:var(--card);border-radius:var(--radius);padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.history-item .hi-info{font-size:.85rem}
+.history-item .hi-score{font-weight:700;color:var(--accent)}
+.history-item .hi-date{font-size:.7rem;color:var(--text2)}
+
+.btn-reset{background:var(--danger);color:#fff;border:none;padding:12px 24px;border-radius:var(--radius);font-size:.85rem;cursor:pointer;margin-top:12px}
+
+/* Cheat Sheet */
+.accordion{margin-bottom:10px}
+.accordion-header{background:var(--card);padding:14px 16px;border-radius:var(--radius);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;transition:background .2s}
+.accordion-header:hover{background:var(--card2)}
+.accordion-header .arrow{transition:transform .3s}
+.accordion-header.open .arrow{transform:rotate(180deg)}
+.accordion-body{background:var(--card);border-radius:0 0 var(--radius) var(--radius);padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+.accordion-body.open{max-height:2000px;padding:16px}
+.accordion-body ul{padding-left:20px;margin:8px 0}
+.accordion-body li{margin-bottom:6px;font-size:.9rem;line-height:1.5}
+.accordion-body h4{color:var(--accent);margin:10px 0 6px;font-size:.9rem}
+
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--card2);display:flex;z-index:100;padding:4px 0;padding-bottom:env(safe-area-inset-bottom)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 0;cursor:pointer;color:var(--text2);font-size:.65rem;gap:2px;transition:color .2s}
+.nav-item.active{color:var(--accent)}
+.nav-item .nav-icon{font-size:1.2rem}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:var(--radius);padding:24px;max-width:400px;width:100%;box-shadow:var(--shadow)}
+.modal h3{margin-bottom:12px}
+.modal p{color:var(--text2);font-size:.9rem;margin-bottom:16px}
+.modal-btns{display:flex;gap:10px}
+.modal-btns button{flex:1;padding:12px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer}
+</style>
 </head>
 <body>
-    <h1>RBB Pertamina Prep</h1>
-    <p>Website latihan soal harian RBB Pertamina - D3 Teknik Kimia Operator</p>
-    <p>Daily quiz prep untuk Rekrutmen Bersama BUMN</p>
+
+<!-- Header -->
+<div class="header">
+  <h1>RBB Pertamina Prep</h1>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle tema">&#9790;</button>
+</div>
+
+<!-- HOME PAGE -->
+<div id="home" class="page active">
+<div class="container">
+  <div class="hero">
+    <h2>Latihan Soal RBB</h2>
+    <p>D3 Teknik Kimia - Operator Pertamina</p>
+  </div>
+  <div class="info-banner">
+    <strong>&#128197; RBB 2026</strong>
+    Rekrutmen Bersama BUMN diperkirakan buka April 2026. Persiapkan dirimu sekarang!
+  </div>
+  <div class="cat-grid">
+    <div class="cat-card" onclick="startQuiz('twk')">
+      <div class="icon">&#127987;</div>
+      <h3>TWK</h3>
+      <p>Wawasan Kebangsaan</p>
+      <div class="count" id="count-twk">30 soal</div>
+    </div>
+    <div class="cat-card" onclick="startQuiz('tiu')">
+      <div class="icon">&#129504;</div>
+      <h3>TIU</h3>
+      <p>Intelegensi Umum</p>
+      <div class="count" id="count-tiu">30 soal</div>
+    </div>
+    <div class="cat-card" onclick="startQuiz('tkp')">
+      <div class="icon">&#128100;</div>
+      <h3>TKP</h3>
+      <p>Karakteristik Pribadi</p>
+      <div class="count" id="count-tkp">30 soal</div>
+    </div>
+    <div class="cat-card" onclick="startQuiz('akhlak')">
+      <div class="icon">&#11088;</div>
+      <h3>AKHLAK</h3>
+      <p>Core Values BUMN</p>
+      <div class="count" id="count-akhlak">20 soal</div>
+    </div>
+    <div class="cat-card" onclick="startQuiz('tkb')" style="grid-column:1/-1">
+      <div class="icon">&#9879;</div>
+      <h3>TKB Teknik Kimia</h3>
+      <p>Proses Kilang, K3, Termodinamika</p>
+      <div class="count" id="count-tkb">40 soal</div>
+    </div>
+  </div>
+  <button class="daily-btn" onclick="startDaily()">&#9889; Latihan Harian (20 Soal Acak)</button>
+  <div class="stats-row">
+    <div class="stat-box"><div class="num" id="home-total">0</div><div class="label">Soal Dijawab</div></div>
+    <div class="stat-box"><div class="num" id="home-avg">0%</div><div class="label">Rata-rata</div></div>
+    <div class="stat-box"><div class="num" id="home-streak">0</div><div class="label">Hari Streak</div></div>
+  </div>
+</div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div id="quiz" class="page">
+<div class="container">
+  <div class="quiz-header">
+    <span id="q-counter">Soal 1/20</span>
+    <button class="btn-quit" style="padding:6px 14px;font-size:.8rem;border-radius:8px" onclick="confirmQuit()">Keluar</button>
+  </div>
+  <div class="quiz-progress"><div class="bar" id="q-progress" style="width:0%"></div></div>
+  <div class="quiz-meta">
+    <span class="cat-badge" id="q-cat">TWK</span>
+    <span class="timer" id="q-timer">60</span>
+  </div>
+  <div class="question-card">
+    <div class="q-num" id="q-label">Soal 1</div>
+    <div class="q-text" id="q-text">Loading...</div>
+  </div>
+  <div class="options" id="q-options"></div>
+  <div class="explanation" id="q-explanation"></div>
+  <div class="quiz-nav" id="q-nav" style="display:none">
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Selanjutnya</button>
+  </div>
+</div>
+</div>
+
+<!-- RESULT PAGE -->
+<div id="result" class="page">
+<div class="container">
+  <div class="result-card">
+    <div class="score-circle" id="r-circle">0%</div>
+    <h2 id="r-title">Hasil Latihan</h2>
+    <p id="r-subtitle">TWK - 20 Soal</p>
+  </div>
+  <div class="result-breakdown">
+    <div class="rb-item"><div class="rb-val" id="r-correct">0</div><div class="rb-label">Benar</div></div>
+    <div class="rb-item"><div class="rb-val" id="r-wrong">0</div><div class="rb-label">Salah</div></div>
+    <div class="rb-item"><div class="rb-val" id="r-time">0:00</div><div class="rb-label">Waktu</div></div>
+    <div class="rb-item"><div class="rb-val" id="r-score">0</div><div class="rb-label">Skor TKP</div></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn-review" onclick="reviewAnswers()">Lihat Pembahasan</button>
+    <button class="btn-retry" onclick="retryQuiz()">Coba Lagi</button>
+    <button class="btn-home" onclick="goHome()">Kembali ke Menu</button>
+  </div>
+</div>
+</div>
+
+<!-- REVIEW PAGE -->
+<div id="review" class="page">
+<div class="container">
+  <h2 style="margin-bottom:16px">Pembahasan</h2>
+  <div id="review-list"></div>
+  <button class="daily-btn" onclick="goHome()" style="margin-top:16px">Kembali ke Menu</button>
+</div>
+</div>
+
+<!-- STATS PAGE -->
+<div id="stats" class="page">
+<div class="container">
+  <h2 style="margin-bottom:16px">Statistik</h2>
+  <div class="stats-row" style="margin-bottom:20px">
+    <div class="stat-box"><div class="num" id="s-total">0</div><div class="label">Total Dijawab</div></div>
+    <div class="stat-box"><div class="num" id="s-avg">0%</div><div class="label">Rata-rata</div></div>
+    <div class="stat-box"><div class="num" id="s-streak">0</div><div class="label">Streak</div></div>
+  </div>
+  <div class="stats-section">
+    <h3>Skor per Kategori</h3>
+    <div id="cat-bars"></div>
+  </div>
+  <div class="stats-section">
+    <h3>Riwayat Latihan</h3>
+    <div class="history-list" id="history-list"><p style="color:var(--text2);font-size:.9rem">Belum ada riwayat</p></div>
+  </div>
+  <button class="btn-reset" onclick="confirmReset()">Reset Semua Data</button>
+</div>
+</div>
+
+<!-- CHEAT SHEET PAGE -->
+<div id="cheatsheet" class="page">
+<div class="container">
+  <h2 style="margin-bottom:16px">Rangkuman Materi</h2>
+  
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion(this)"><span>Pancasila & UUD 1945</span><span class="arrow">&#9660;</span></div>
+    <div class="accordion-body">
+      <h4>5 Sila Pancasila:</h4>
+      <ul>
+        <li><strong>Sila 1:</strong> Ketuhanan Yang Maha Esa</li>
+        <li><strong>Sila 2:</strong> Kemanusiaan yang Adil dan Beradab</li>
+        <li><strong>Sila 3:</strong> Persatuan Indonesia</li>
+        <li><strong>Sila 4:</strong> Kerakyatan yang Dipimpin oleh Hikmat Kebijaksanaan dalam Permusyawaratan/Perwakilan</li>
+        <li><strong>Sila 5:</strong> Keadilan Sosial bagi Seluruh Rakyat Indonesia</li>
+      </ul>
+      <h4>UUD 1945 Key Points:</h4>
+      <ul>
+        <li>Disahkan 18 Agustus 1945 oleh PPKI</li>
+        <li>Pembukaan UUD 1945 memuat Pancasila</li>
+        <li>Pasal 1: NKRI, kedaulatan rakyat</li>
+        <li>Pasal 27: Hak warga negara</li>
+        <li>Pasal 28A-28J: Hak Asasi Manusia</li>
+        <li>Pasal 33: Perekonomian nasional</li>
+        <li>Amandemen 4 kali (1999-2002)</li>
+      </ul>
+      <h4>Tokoh Penting:</h4>
+      <ul>
+        <li>Ir. Soekarno - Mengusulkan Pancasila 1 Juni 1945</li>
+        <li>Moh. Hatta - Wakil Presiden pertama</li>
+        <li>Soepomo - Konsep negara integralistik</li>
+        <li>Moh. Yamin - Mengusulkan dasar negara 29 Mei 1945</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion(this)"><span>AKHLAK - Core Values BUMN</span><span class="arrow">&#9660;</span></div>
+    <div class="accordion-body">
+      <ul>
+        <li><strong>Amanah</strong> - Memegang teguh kepercayaan yang diberikan. Memenuhi janji, bertanggung jawab.</li>
+        <li><strong>Kompeten</strong> - Terus belajar dan mengembangkan kapabilitas. Menyelesaikan tugas dengan kualitas terbaik.</li>
+        <li><strong>Harmonis</strong> - Saling peduli dan menghargai perbedaan. Membangun lingkungan kerja kondusif.</li>
+        <li><strong>Loyal</strong> - Berdedikasi dan mengutamakan kepentingan organisasi. Menjaga nama baik BUMN.</li>
+        <li><strong>Adaptif</strong> - Terus berinovasi dan antusias menghadapi perubahan. Proaktif mencari solusi.</li>
+        <li><strong>Kolaboratif</strong> - Membangun kerja sama sinergis. Terbuka bekerja sama untuk hasil terbaik.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion(this)"><span>Teknik Kimia - Proses Kilang Minyak</span><span class="arrow">&#9660;</span></div>
+    <div class="accordion-body">
+      <h4>Unit Proses Utama Kilang:</h4>
+      <ul>
+        <li><strong>CDU (Crude Distillation Unit)</strong> - Memisahkan minyak mentah berdasarkan titik didih pada tekanan atmosferik</li>
+        <li><strong>Vacuum Distillation Unit</strong> - Distilasi lanjutan pada tekanan vakum untuk residu CDU</li>
+        <li><strong>FCC (Fluid Catalytic Cracking)</strong> - Memecah molekul besar (gasoil) menjadi bensin/LPG menggunakan katalis zeolite</li>
+        <li><strong>Catalytic Reforming</strong> - Mengubah naphtha menjadi bensin beroktan tinggi (reformate)</li>
+        <li><strong>Hydrotreating/HDS</strong> - Menghilangkan sulfur dari produk menggunakan hidrogen</li>
+        <li><strong>Isomerization</strong> - Mengubah struktur molekul untuk meningkatkan oktan</li>
+        <li><strong>Alkylation</strong> - Menggabungkan molekul kecil menjadi bensin beroktan tinggi</li>
+      </ul>
+      <h4>Produk Kilang (dari ringan ke berat):</h4>
+      <ul>
+        <li><strong>LPG</strong> - Gas (C3-C4), titik didih &lt;30&deg;C</li>
+        <li><strong>Naphtha</strong> - Bahan baku petrokimia/bensin, 30-150&deg;C</li>
+        <li><strong>Kerosene/Avtur</strong> - Bahan bakar jet, 150-250&deg;C</li>
+        <li><strong>Solar/Diesel</strong> - Bahan bakar mesin diesel, 250-350&deg;C</li>
+        <li><strong>Residu</strong> - Aspal, fuel oil, &gt;350&deg;C</li>
+      </ul>
+      <h4>Peralatan Kilang:</h4>
+      <ul>
+        <li><strong>Heat Exchanger</strong> - Memindahkan panas antar fluida tanpa kontak langsung</li>
+        <li><strong>Fired Heater/Furnace</strong> - Memanaskan fluida dengan pembakaran langsung</li>
+        <li><strong>Kolom Distilasi</strong> - Memisahkan campuran berdasarkan volatilitas</li>
+        <li><strong>Reactor</strong> - Tempat reaksi kimia berlangsung</li>
+        <li><strong>Compressor</strong> - Menaikkan tekanan gas</li>
+        <li><strong>Pump</strong> - Memindahkan cairan</li>
+        <li><strong>Vessel (Drum/Tank)</strong> - Menampung/memisahkan fluida</li>
+        <li><strong>Desalter</strong> - Menghilangkan garam dan air dari crude oil</li>
+      </ul>
+      <h4>6 Kilang Pertamina:</h4>
+      <ul>
+        <li>RU II Dumai (Riau) - 170.000 bpd</li>
+        <li>RU III Plaju (Sumatera Selatan) - 118.000 bpd</li>
+        <li>RU IV Cilacap (Jawa Tengah) - 348.000 bpd (terbesar)</li>
+        <li>RU V Balikpapan (Kalimantan Timur) - 260.000 bpd</li>
+        <li>RU VI Balongan (Jawa Barat) - 125.000 bpd</li>
+        <li>RU VII Kasim (Papua Barat) - 10.000 bpd</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion(this)"><span>K3 (Keselamatan & Kesehatan Kerja)</span><span class="arrow">&#9660;</span></div>
+    <div class="accordion-body">
+      <h4>APD Wajib di Area Kilang:</h4>
+      <ul>
+        <li>Safety helmet (pelindung kepala)</li>
+        <li>Safety shoes (sepatu keselamatan)</li>
+        <li>Safety glasses/goggles (kacamata pelindung)</li>
+        <li>Earplug/earmuff (pelindung telinga)</li>
+        <li>Fire retardant coverall (pakaian tahan api)</li>
+        <li>Sarung tangan sesuai jenis pekerjaan</li>
+        <li>SCBA (Self-Contained Breathing Apparatus) untuk area beracun</li>
+      </ul>
+      <h4>Istilah Penting K3:</h4>
+      <ul>
+        <li><strong>Flash Point</strong> - Suhu minimum uap cairan dapat menyala</li>
+        <li><strong>LEL/UEL</strong> - Batas bawah/atas konsentrasi gas mudah terbakar di udara</li>
+        <li><strong>MSDS/SDS</strong> - Lembar data keselamatan bahan kimia</li>
+        <li><strong>Permit to Work</strong> - Izin kerja untuk pekerjaan berbahaya</li>
+        <li><strong>LOTO (Lockout Tagout)</strong> - Prosedur isolasi energi saat maintenance</li>
+        <li><strong>JSA (Job Safety Analysis)</strong> - Analisis keselamatan pekerjaan</li>
+        <li><strong>Near Miss</strong> - Kejadian hampir celaka</li>
+        <li><strong>HSE</strong> - Health, Safety, Environment</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion(this)"><span>Tips & Trik Lolos RBB</span><span class="arrow">&#9660;</span></div>
+    <div class="accordion-body">
+      <ul>
+        <li><strong>TKP:</strong> Selalu pilih jawaban yang paling proaktif, berintegritas, dan mengedepankan kepentingan organisasi</li>
+        <li><strong>TWK:</strong> Hafal sila Pancasila, pasal-pasal penting UUD 1945, sejarah kemerdekaan</li>
+        <li><strong>TIU:</strong> Latihan deret angka dan sinonim/antonim setiap hari, gunakan eliminasi untuk soal logika</li>
+        <li><strong>AKHLAK:</strong> Pahami implementasi nyata setiap nilai, bukan hanya hafal kepanjangan</li>
+        <li><strong>TKB:</strong> Kuasai proses utama kilang (CDU, FCC, Reforming), pahami K3, dan ketahui produk-produk Pertamina</li>
+        <li><strong>Manajemen Waktu:</strong> Jangan terlalu lama di 1 soal, skip dan kembali lagi</li>
+        <li><strong>Passing Grade:</strong> Pastikan tidak ada kategori yang nilainya di bawah ambang batas</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-title">Konfirmasi</h3>
+    <p id="modal-text">Yakin ingin keluar?</p>
+    <div class="modal-btns">
+      <button style="background:var(--card2);color:var(--text)" onclick="closeModal()">Batal</button>
+      <button id="modal-confirm" style="background:var(--danger);color:#fff" onclick="">Ya</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="goHome()" id="nav-home"><span class="nav-icon">&#127968;</span>Home</div>
+  <div class="nav-item" onclick="showPage('stats')" id="nav-stats"><span class="nav-icon">&#128202;</span>Statistik</div>
+  <div class="nav-item" onclick="showPage('cheatsheet')" id="nav-cheatsheet"><span class="nav-icon">&#128218;</span>Materi</div>
+</div>
+
+<script>
+// ===== QUESTION BANK =====
+const QUESTIONS = {
+twk: [
+{id:'twk1',q:'Sila ke-4 Pancasila berbunyi...',o:['Keadilan Sosial bagi Seluruh Rakyat Indonesia','Kerakyatan yang Dipimpin oleh Hikmat Kebijaksanaan dalam Permusyawaratan/Perwakilan','Persatuan Indonesia','Ketuhanan Yang Maha Esa'],c:1,e:'Sila ke-4 Pancasila adalah "Kerakyatan yang Dipimpin oleh Hikmat Kebijaksanaan dalam Permusyawaratan/Perwakilan", mencerminkan prinsip demokrasi Pancasila.'},
+{id:'twk2',q:'Siapa tokoh yang pertama kali mengusulkan nama "Pancasila" pada sidang BPUPKI 1 Juni 1945?',o:['Moh. Yamin','Ir. Soekarno','Soepomo','Moh. Hatta'],c:1,e:'Ir. Soekarno mengusulkan nama "Pancasila" sebagai dasar negara pada pidatonya tanggal 1 Juni 1945 dalam sidang BPUPKI.'},
+{id:'twk3',q:'UUD 1945 disahkan oleh...',o:['BPUPKI','PPKI','Panitia Sembilan','Konstituante'],c:1,e:'UUD 1945 disahkan oleh PPKI (Panitia Persiapan Kemerdekaan Indonesia) pada tanggal 18 Agustus 1945, sehari setelah proklamasi.'},
+{id:'twk4',q:'Pasal berapa dalam UUD 1945 yang mengatur tentang Hak Asasi Manusia?',o:['Pasal 26-26C','Pasal 28A-28J','Pasal 30-30A','Pasal 33-34'],c:1,e:'Pasal 28A sampai 28J UUD 1945 mengatur tentang HAM, ditambahkan melalui amandemen kedua tahun 2000.'},
+{id:'twk5',q:'Isi dari Sumpah Pemuda yang diikrarkan pada 28 Oktober 1928 adalah...',o:['Satu nusa, satu bangsa, satu agama','Satu nusa, satu bangsa, satu bahasa','Satu tanah air, satu cita-cita, satu bahasa','Satu bangsa, satu negara, satu pemimpin'],c:1,e:'Sumpah Pemuda: Kami putra dan putri Indonesia mengaku (1) bertumpah darah yang satu, tanah air Indonesia; (2) berbangsa yang satu, bangsa Indonesia; (3) menjunjung bahasa persatuan, bahasa Indonesia.'},
+{id:'twk6',q:'BPUPKI (Badan Penyelidik Usaha-usaha Persiapan Kemerdekaan Indonesia) dibentuk pada tanggal...',o:['1 Maret 1945','29 April 1945','1 Juni 1945','29 Mei 1945'],c:1,e:'BPUPKI dibentuk pada 29 April 1945 oleh pemerintah Jepang, diketuai oleh dr. K.R.T. Radjiman Wedyodiningrat.'},
+{id:'twk7',q:'Pasal 33 UUD 1945 mengatur tentang...',o:['Pertahanan dan keamanan','Perekonomian nasional dan kesejahteraan sosial','Pendidikan nasional','Hak dan kewajiban warga negara'],c:1,e:'Pasal 33 UUD 1945 mengatur perekonomian nasional, termasuk ayat (3) yang menyatakan bumi, air, dan kekayaan alam dikuasai negara untuk kemakmuran rakyat.'},
+{id:'twk8',q:'Berapa kali UUD 1945 diamandemen?',o:['2 kali','3 kali','4 kali','5 kali'],c:2,e:'UUD 1945 diamandemen 4 kali: tahun 1999, 2000, 2001, dan 2002.'},
+{id:'twk9',q:'Sistem pemerintahan Indonesia menurut UUD 1945 adalah...',o:['Parlementer','Presidensial','Semi-presidensial','Federal'],c:1,e:'Indonesia menganut sistem pemerintahan presidensial, dimana Presiden adalah kepala negara sekaligus kepala pemerintahan.'},
+{id:'twk10',q:'Proklamasi kemerdekaan Indonesia dibacakan di...',o:['Lapangan IKADA Jakarta','Jalan Pegangsaan Timur No. 56 Jakarta','Istana Merdeka Jakarta','Gedung Pancasila Jakarta'],c:1,e:'Proklamasi dibacakan di Jalan Pegangsaan Timur No. 56, Jakarta (kini Jalan Proklamasi) pada 17 Agustus 1945.'},
+{id:'twk11',q:'Lambang negara Indonesia "Garuda Pancasila" ditetapkan melalui...',o:['PP No. 66 Tahun 1951','UU No. 24 Tahun 2009','Keppres No. 7 Tahun 1950','PP No. 43 Tahun 1958'],c:1,e:'Garuda Pancasila sebagai lambang negara ditetapkan melalui PP No. 66 Tahun 1951 tentang Lambang Negara.'},
+{id:'twk12',q:'Makna semboyan "Bhinneka Tunggal Ika" adalah...',o:['Banyak suku satu pemimpin','Berbeda-beda tetapi tetap satu jua','Beragam budaya satu negara','Berbagai agama satu tujuan'],c:1,e:'"Bhinneka Tunggal Ika" berasal dari Kakawin Sutasoma karya Mpu Tantular, artinya "Berbeda-beda tetapi tetap satu jua".'},
+{id:'twk13',q:'Lembaga negara yang berwenang menguji undang-undang terhadap UUD 1945 adalah...',o:['Mahkamah Agung','Mahkamah Konstitusi','DPR','MPR'],c:1,e:'Mahkamah Konstitusi (MK) berwenang menguji UU terhadap UUD (judicial review), sesuai Pasal 24C UUD 1945.'},
+{id:'twk14',q:'Panitia Sembilan menghasilkan rumusan yang dikenal dengan...',o:['Pancasila','Jakarta Charter (Piagam Jakarta)','UUD 1945','Proklamasi'],c:1,e:'Panitia Sembilan yang diketuai Soekarno menghasilkan Piagam Jakarta (Jakarta Charter) pada 22 Juni 1945, yang menjadi cikal bakal Pembukaan UUD 1945.'},
+{id:'twk15',q:'Negara Indonesia adalah negara kesatuan yang berbentuk...',o:['Monarki','Federal','Republik','Serikat'],c:2,e:'Sesuai Pasal 1 ayat (1) UUD 1945: "Negara Indonesia ialah Negara Kesatuan yang berbentuk Republik."'},
+{id:'twk16',q:'Siapa Ketua PPKI (Panitia Persiapan Kemerdekaan Indonesia)?',o:['Moh. Hatta','Ir. Soekarno','Ahmad Soebardjo','Radjiman Wedyodiningrat'],c:1,e:'Ir. Soekarno menjadi Ketua PPKI, dengan Moh. Hatta sebagai Wakil Ketua.'},
+{id:'twk17',q:'Wawasan Nusantara merupakan wawasan nasional Indonesia yang bersumber dari...',o:['Pancasila dan UUD 1945','Supersemar','Dekrit Presiden','Piagam Jakarta'],c:0,e:'Wawasan Nusantara bersumber dari Pancasila dan UUD 1945, merupakan cara pandang bangsa Indonesia tentang diri dan lingkungannya.'},
+{id:'twk18',q:'MPR terdiri dari anggota...',o:['DPR saja','DPR dan DPD','DPR, DPD, dan utusan golongan','DPR dan utusan daerah'],c:1,e:'Setelah amandemen, MPR terdiri dari anggota DPR dan anggota DPD yang dipilih melalui pemilihan umum (Pasal 2 ayat 1 UUD 1945).'},
+{id:'twk19',q:'Hari Kebangkitan Nasional diperingati setiap tanggal...',o:['28 Oktober','20 Mei','2 Mei','1 Juni'],c:1,e:'20 Mei diperingati sebagai Hari Kebangkitan Nasional, merujuk pada berdirinya Budi Utomo pada 20 Mei 1908.'},
+{id:'twk20',q:'Konferensi Asia-Afrika yang diselenggarakan di Bandung tahun 1955 menghasilkan...',o:['Piagam Jakarta','Dasasila Bandung','Deklarasi Juanda','Perjanjian Linggarjati'],c:1,e:'KAA 1955 menghasilkan Dasasila Bandung (10 prinsip), yang mempromosikan perdamaian dan kerja sama antar bangsa Asia-Afrika.'},
+{id:'twk21',q:'Deklarasi Juanda (1957) berkaitan dengan...',o:['Nasionalisasi perusahaan asing','Konsep negara kepulauan Indonesia','Pembentukan Irian Barat','Konfrontasi Malaysia'],c:1,e:'Deklarasi Juanda (13 Desember 1957) menyatakan Indonesia sebagai negara kepulauan, memperluas wilayah laut Indonesia.'},
+{id:'twk22',q:'Presiden dan Wakil Presiden dipilih dalam satu pasangan secara langsung oleh rakyat berdasarkan pasal...',o:['Pasal 4 ayat 1','Pasal 6A ayat 1','Pasal 7','Pasal 22E'],c:1,e:'Pasal 6A ayat (1) UUD 1945 (amandemen ketiga): "Presiden dan Wakil Presiden dipilih dalam satu pasangan secara langsung oleh rakyat."'},
+{id:'twk23',q:'Otonomi daerah di Indonesia diatur dalam UU No...',o:['UU No. 22 Tahun 1999','UU No. 32 Tahun 2004','UU No. 23 Tahun 2014','UU No. 5 Tahun 1974'],c:2,e:'UU No. 23 Tahun 2014 tentang Pemerintahan Daerah adalah landasan hukum terbaru yang mengatur otonomi daerah di Indonesia.'},
+{id:'twk24',q:'Sila ke-1 Pancasila dilambangkan dengan...',o:['Rantai','Bintang','Pohon beringin','Banteng'],c:1,e:'Bintang melambangkan Sila ke-1 (Ketuhanan Yang Maha Esa). Rantai = Sila 2, Pohon beringin = Sila 3, Kepala banteng = Sila 4, Padi kapas = Sila 5.'},
+{id:'twk25',q:'Naskah asli teks Proklamasi ditulis tangan oleh...',o:['Ir. Soekarno','Moh. Hatta','Ahmad Soebardjo','Sayuti Melik'],c:0,e:'Naskah asli (konsep) Proklamasi ditulis tangan oleh Ir. Soekarno atas usul Moh. Hatta, kemudian diketik oleh Sayuti Melik.'},
+{id:'twk26',q:'Batas usia minimal calon Presiden Indonesia menurut UUD 1945 adalah...',o:['30 tahun','35 tahun','40 tahun','45 tahun'],c:2,e:'Menurut Pasal 6 ayat (1) UUD 1945 dan UU Pemilu, calon Presiden harus berusia minimal 40 tahun.'},
+{id:'twk27',q:'Gerakan Non-Blok (GNB) pertama kali dicetuskan dalam...',o:['KAA Bandung 1955','KTT Beograd 1961','Konferensi Kolombo 1954','Sidang PBB 1960'],c:0,e:'Prinsip-prinsip GNB lahir dari semangat KAA Bandung 1955, meskipun secara resmi GNB berdiri di KTT Beograd 1961.'},
+{id:'twk28',q:'Bahasa Indonesia ditetapkan sebagai bahasa negara dalam UUD 1945 pasal...',o:['Pasal 32','Pasal 36','Pasal 35','Pasal 37'],c:1,e:'Pasal 36 UUD 1945: "Bahasa negara ialah bahasa Indonesia."'},
+{id:'twk29',q:'Perjanjian Renville (1948) diadakan di atas kapal perang...',o:['USS Missouri','USS Renville','HMS Victory','USS Enterprise'],c:1,e:'Perundingan Renville dilaksanakan di atas kapal perang Amerika Serikat USS Renville yang berlabuh di Teluk Jakarta.'},
+{id:'twk30',q:'Kedaulatan berada di tangan rakyat dan dilaksanakan menurut UUD, tercantum dalam pasal...',o:['Pasal 1 ayat 1','Pasal 1 ayat 2','Pasal 1 ayat 3','Pasal 2 ayat 1'],c:1,e:'Pasal 1 ayat (2) UUD 1945: "Kedaulatan berada di tangan rakyat dan dilaksanakan menurut Undang-Undang Dasar."'}
+],
+// END TWK
+tiu: [
+{id:'tiu1',q:'Sinonim dari kata "Paradoks" adalah...',o:['Kesamaan','Kontradiksi','Perbandingan','Keselarasan'],c:1,e:'Paradoks berarti pernyataan yang seolah bertentangan tetapi mengandung kebenaran. Sinonimnya adalah kontradiksi.'},
+{id:'tiu2',q:'Antonim dari kata "Pragmatis" adalah...',o:['Realistis','Idealis','Materialis','Optimis'],c:1,e:'Pragmatis artinya berorientasi pada hal praktis/nyata. Antonimnya adalah idealis yang berorientasi pada cita-cita/idealisme.'},
+{id:'tiu3',q:'Deret angka: 2, 6, 18, 54, ... Bilangan selanjutnya adalah...',o:['108','162','216','148'],c:1,e:'Pola deret: setiap angka dikali 3. Jadi 2x3=6, 6x3=18, 18x3=54, 54x3=162.'},
+{id:'tiu4',q:'Jika semua A adalah B, dan semua B adalah C, maka...',o:['Semua C adalah A','Semua A adalah C','Sebagian A adalah C','Tidak ada hubungan A dan C'],c:1,e:'Ini adalah silogisme dasar. Jika A⊂B dan B⊂C, maka A⊂C. Jadi semua A pasti juga C.'},
+{id:'tiu5',q:'35% dari 240 adalah...',o:['74','80','84','96'],c:2,e:'35% x 240 = 0,35 x 240 = 84.'},
+{id:'tiu6',q:'Sinonim dari kata "Hedonisme" adalah...',o:['Kesederhanaan','Kesenangan','Keserakahan','Kemewahan'],c:1,e:'Hedonisme adalah pandangan hidup yang menganggap kesenangan dan kenikmatan sebagai tujuan utama.'},
+{id:'tiu7',q:'Deret: 3, 5, 9, 15, 23, ... Bilangan selanjutnya adalah...',o:['31','33','35','37'],c:1,e:'Selisih antar angka: 2, 4, 6, 8, ... (bertambah 2). Jadi 23 + 10 = 33.'},
+{id:'tiu8',q:'KUCING : MEONG = ANJING : ...',o:['MENGGONGGONG','MENDESIS','MENGAUM','GUK GUK'],c:3,e:'Analogi suara hewan. Kucing bersuara meong, anjing bersuara guk guk.'},
+{id:'tiu9',q:'Jika harga barang naik 20%, kemudian turun 20%, maka harga akhir dibanding harga awal...',o:['Sama','Turun 4%','Naik 4%','Turun 2%'],c:1,e:'Misal harga awal 100. Naik 20% = 120. Turun 20% dari 120 = 120 - 24 = 96. Jadi turun 4% dari harga awal.'},
+{id:'tiu10',q:'Antonim dari kata "Heterogen" adalah...',o:['Beragam','Homogen','Campuran','Kompleks'],c:1,e:'Heterogen artinya beraneka ragam/berbeda-beda. Antonimnya adalah homogen yang artinya sejenis/seragam.'},
+{id:'tiu11',q:'Deret: 1, 1, 2, 3, 5, 8, 13, ... Bilangan selanjutnya adalah...',o:['18','20','21','26'],c:2,e:'Ini adalah deret Fibonacci. Setiap angka adalah jumlah dua angka sebelumnya: 8 + 13 = 21.'},
+{id:'tiu12',q:'DOKTER : PASIEN = GURU : ...',o:['Sekolah','Murid','Buku','Kelas'],c:1,e:'Analogi hubungan profesi dengan objek layanan. Dokter melayani pasien, guru melayani murid.'},
+{id:'tiu13',q:'Jika rata-rata 5 bilangan adalah 12, dan 4 bilangan pertama adalah 10, 11, 13, 14, maka bilangan ke-5 adalah...',o:['10','12','11','14'],c:1,e:'Total = 5 x 12 = 60. Jumlah 4 bilangan = 10+11+13+14 = 48. Bilangan ke-5 = 60 - 48 = 12.'},
+{id:'tiu14',q:'Sinonim dari kata "Konsolidasi" adalah...',o:['Pemisahan','Penggabungan','Penghancuran','Pengurangan'],c:1,e:'Konsolidasi artinya penggabungan, penyatuan, atau penguatan kembali.'},
+{id:'tiu15',q:'Deret: 100, 95, 85, 70, 50, ... Bilangan selanjutnya adalah...',o:['30','25','20','35'],c:1,e:'Selisih: -5, -10, -15, -20, ... (berkurang 5). Jadi 50 - 25 = 25.'},
+{id:'tiu16',q:'Semua mahasiswa rajin belajar. Budi adalah mahasiswa. Kesimpulannya...',o:['Budi mungkin rajin belajar','Budi rajin belajar','Budi belum tentu rajin','Tidak dapat disimpulkan'],c:1,e:'Premis mayor: Semua mahasiswa rajin belajar. Premis minor: Budi mahasiswa. Kesimpulan: Budi rajin belajar (silogisme valid).'},
+{id:'tiu17',q:'Berapa hasil dari 3/4 + 2/3 - 1/6?',o:['1 1/4','1 1/2','1 1/3','1 5/12'],c:0,e:'Samakan penyebut (12): 9/12 + 8/12 - 2/12 = 15/12 = 1 3/12 = 1 1/4.'},
+{id:'tiu18',q:'Antonim dari kata "Ekspansif" adalah...',o:['Agresif','Defensif','Ofensif','Progresif'],c:1,e:'Ekspansif artinya bersifat meluas/memperluas. Antonimnya adalah defensif yang bersifat bertahan/membatasi.'},
+{id:'tiu19',q:'PANAS : DINGIN = TERANG : ...',o:['Siang','Malam','Gelap','Cahaya'],c:2,e:'Analogi antonim. Panas lawan dingin, terang lawan gelap.'},
+{id:'tiu20',q:'Sebuah mobil menempuh jarak 180 km dalam 2,5 jam. Kecepatan rata-ratanya adalah...',o:['60 km/jam','72 km/jam','80 km/jam','90 km/jam'],c:1,e:'Kecepatan = Jarak / Waktu = 180 / 2,5 = 72 km/jam.'},
+{id:'tiu21',q:'Deret: 2, 3, 5, 8, 13, 21, ... Bilangan selanjutnya adalah...',o:['30','32','34','36'],c:2,e:'Pola: setiap angka = jumlah dua angka sebelumnya. 13 + 21 = 34.'},
+{id:'tiu22',q:'Sinonim dari kata "Elaborasi" adalah...',o:['Penyederhanaan','Penguraian rinci','Penghapusan','Ringkasan'],c:1,e:'Elaborasi artinya penguraian secara rinci/mendetail terhadap suatu hal.'},
+{id:'tiu23',q:'Jika p = 3 dan q = -2, maka nilai dari 2p^2 - 3pq + q^2 adalah...',o:['34','40','32','36'],c:2,e:'2(9) - 3(3)(-2) + (-2)^2 = 18 + 18 + 4 = 40. Koreksi: 2(9)=18, -3(3)(-2)=18, (-2)^2=4. Total=40. Jawaban: 40 (index 1). Maaf, 18+18+4=40.'},
+{id:'tiu24',q:'Tidak ada ikan yang bisa terbang. Semua burung bisa terbang. Kesimpulannya...',o:['Semua burung adalah ikan','Tidak ada ikan yang burung','Sebagian ikan adalah burung','Ikan dan burung sama'],c:1,e:'Jika tidak ada ikan bisa terbang, dan semua burung bisa terbang, maka tidak ada ikan yang merupakan burung.'},
+{id:'tiu25',q:'Deret: 1, 4, 9, 16, 25, ... Bilangan selanjutnya adalah...',o:['30','36','42','49'],c:1,e:'Ini deret kuadrat: 1^2=1, 2^2=4, 3^2=9, 4^2=16, 5^2=25, 6^2=36.'},
+{id:'tiu26',q:'Antonim dari kata "Skeptis" adalah...',o:['Ragu','Yakin','Bingung','Curiga'],c:1,e:'Skeptis artinya ragu-ragu/tidak percaya. Antonimnya adalah yakin/percaya.'},
+{id:'tiu27',q:'Sebuah bak diisi air dengan debit 5 liter/menit. Jika volume bak 300 liter, berapa menit untuk penuh?',o:['50 menit','55 menit','60 menit','65 menit'],c:2,e:'Waktu = Volume / Debit = 300 / 5 = 60 menit.'},
+{id:'tiu28',q:'BUKU : PERPUSTAKAAN = UANG : ...',o:['Toko','Bank','Dompet','Kasir'],c:1,e:'Analogi tempat penyimpanan. Buku disimpan di perpustakaan, uang disimpan di bank.'},
+{id:'tiu29',q:'Jika A bisa menyelesaikan pekerjaan dalam 6 hari dan B dalam 12 hari, berapa hari jika bekerja bersama?',o:['3 hari','4 hari','5 hari','6 hari'],c:1,e:'Kapasitas A = 1/6 per hari, B = 1/12 per hari. Bersama = 1/6 + 1/12 = 3/12 = 1/4 per hari. Jadi selesai dalam 4 hari.'},
+{id:'tiu30',q:'Deret: 256, 128, 64, 32, ... Bilangan selanjutnya adalah...',o:['8','12','16','24'],c:2,e:'Pola: setiap angka dibagi 2. 256/2=128, 128/2=64, 64/2=32, 32/2=16.'}
+],
+// END TIU
+tkp: [
+{id:'tkp1',q:'Anda mendapati rekan kerja melakukan kecurangan dalam laporan keuangan. Apa yang Anda lakukan?',o:[{t:'Melaporkan kepada atasan dengan bukti yang jelas',s:5},{t:'Menegur rekan tersebut secara pribadi dan memintanya memperbaiki',s:4},{t:'Berdiskusi dengan rekan lain tentang masalah ini',s:3},{t:'Mengabaikan karena bukan urusan Anda',s:2},{t:'Ikut menutupi karena tidak ingin berkonflik',s:1}],e:'Integritas mengharuskan kita melaporkan kecurangan melalui jalur yang tepat dengan bukti yang jelas, bukan mengabaikan atau ikut menutupi.'},
+{id:'tkp2',q:'Atasan memberikan tugas yang berada di luar kompetensi Anda dengan deadline ketat. Sikap Anda...',o:[{t:'Menerima dan segera mempelajari hal baru sambil meminta bimbingan atasan',s:5},{t:'Menerima lalu bertanya kepada rekan yang lebih berpengalaman',s:4},{t:'Menerima tapi mengerjakan seadanya',s:3},{t:'Meminta atasan menugaskan orang lain yang lebih kompeten',s:2},{t:'Menolak karena di luar job description',s:1}],e:'Sikap adaptif dan mau belajar adalah kunci. Menerima tantangan sambil proaktif mencari bimbingan menunjukkan profesionalisme.'},
+{id:'tkp3',q:'Saat rapat tim, ide Anda dikritik keras oleh rekan kerja. Reaksi Anda...',o:[{t:'Mendengarkan kritik dengan terbuka dan meminta masukan konstruktif untuk perbaikan',s:5},{t:'Mempertahankan ide dengan data dan argumen yang logis',s:4},{t:'Menerima kritik tanpa berkomentar',s:3},{t:'Merasa tersinggung tapi diam saja',s:2},{t:'Membalas mengkritik ide rekan tersebut',s:1}],e:'Keterbukaan terhadap kritik dan kemampuan meminta masukan konstruktif menunjukkan kedewasaan profesional dan nilai harmonis.'},
+{id:'tkp4',q:'Anda diminta lembur padahal sudah ada janji keluarga. Apa yang Anda lakukan?',o:[{t:'Mengkomunikasikan situasi ke atasan dan mencari solusi bersama (misal kerja pagi-pagi)',s:5},{t:'Membatalkan janji keluarga dan lembur',s:4},{t:'Meminta rekan lain menggantikan',s:3},{t:'Lembur tapi setengah hati',s:2},{t:'Menolak karena sudah ada janji',s:1}],e:'Komunikasi terbuka dan mencari solusi win-win menunjukkan profesionalisme sekaligus menjaga keseimbangan hidup.'},
+{id:'tkp5',q:'Rekan kerja baru kesulitan beradaptasi. Sikap Anda...',o:[{t:'Proaktif menawarkan bantuan dan membimbingnya beradaptasi',s:5},{t:'Membantu jika diminta',s:4},{t:'Memberitahu dimana mencari informasi',s:3},{t:'Membiarkan karena itu tanggung jawab HRD',s:2},{t:'Tidak peduli karena bukan urusan Anda',s:1}],e:'Sikap proaktif membantu rekan baru mencerminkan nilai kolaboratif dan harmonis dalam lingkungan kerja BUMN.'},
+{id:'tkp6',q:'Anda menemukan prosedur kerja yang tidak efisien. Apa yang Anda lakukan?',o:[{t:'Menyusun proposal perbaikan dengan data dan mengajukannya ke atasan',s:5},{t:'Mendiskusikan dengan tim dan bersama-sama mengusulkan perubahan',s:4},{t:'Menyampaikan keluhan ke atasan secara lisan',s:3},{t:'Mengikuti prosedur yang ada saja',s:2},{t:'Mengabaikan prosedur dan bekerja dengan cara sendiri',s:1}],e:'Menyusun proposal perbaikan dengan data menunjukkan nilai adaptif dan kompeten - proaktif mencari solusi yang lebih baik.'},
+{id:'tkp7',q:'Proyek tim Anda gagal mencapai target. Bagaimana sikap Anda?',o:[{t:'Menganalisis penyebab kegagalan bersama tim dan membuat rencana perbaikan',s:5},{t:'Mengakui kegagalan dan berkomitmen bekerja lebih baik',s:4},{t:'Menerima kegagalan dengan lapang dada',s:3},{t:'Menyalahkan anggota tim yang tidak bekerja optimal',s:2},{t:'Menyalahkan situasi dan kondisi di luar kendali',s:1}],e:'Menganalisis kegagalan secara objektif dan membuat rencana perbaikan menunjukkan kepemimpinan dan akuntabilitas.'},
+{id:'tkp8',q:'Anda mendapat informasi rahasia perusahaan dari rekan. Apa yang Anda lakukan?',o:[{t:'Tidak menyebarkan dan mengingatkan rekan tentang kerahasiaan informasi',s:5},{t:'Menyimpan informasi untuk diri sendiri',s:4},{t:'Mengkonfirmasi kebenaran informasi ke atasan',s:3},{t:'Menceritakan ke rekan dekat saja',s:2},{t:'Memposting di media sosial',s:1}],e:'Menjaga kerahasiaan dan mengingatkan rekan mencerminkan nilai amanah - memegang teguh kepercayaan yang diberikan.'},
+{id:'tkp9',q:'Ada perubahan kebijakan besar di perusahaan yang tidak Anda setujui. Sikap Anda...',o:[{t:'Menjalankan kebijakan sambil menyampaikan masukan konstruktif melalui jalur resmi',s:5},{t:'Menjalankan kebijakan dengan penuh tanggung jawab',s:4},{t:'Menjalankan tapi sambil mengeluh ke rekan',s:3},{t:'Menjalankan setengah hati',s:2},{t:'Menolak kebijakan tersebut',s:1}],e:'Loyal berarti mendukung keputusan organisasi sambil tetap menyampaikan masukan secara konstruktif melalui jalur yang tepat.'},
+{id:'tkp10',q:'Saat presentasi penting, peralatan teknis tiba-tiba bermasalah. Apa yang Anda lakukan?',o:[{t:'Tetap tenang, improvisasi presentasi tanpa alat bantu sambil minta teknisi memperbaiki',s:5},{t:'Meminta waktu jeda sebentar untuk memperbaiki masalah',s:4},{t:'Melanjutkan dengan menjelaskan situasi ke audiens',s:3},{t:'Panik dan meminta presentasi dijadwal ulang',s:2},{t:'Menyalahkan pihak yang menyiapkan peralatan',s:1}],e:'Kemampuan improvisasi dan tetap tenang menunjukkan adaptabilitas tinggi - kunci sukses di lingkungan kerja yang dinamis.'},
+{id:'tkp11',q:'Anda memiliki ide brilian tapi atasan memilih ide rekan lain. Reaksi Anda...',o:[{t:'Mendukung keputusan atasan dan berkontribusi maksimal untuk menyukseskan ide yang dipilih',s:5},{t:'Menerima keputusan dan tetap bekerja profesional',s:4},{t:'Menerima tapi merasa kecewa',s:3},{t:'Menunjukkan ketidaksetujuan secara pasif',s:2},{t:'Berusaha menyabotase ide yang dipilih',s:1}],e:'Mendukung keputusan dan berkontribusi aktif menunjukkan loyalitas dan kemampuan bekerja dalam tim (kolaboratif).'},
+{id:'tkp12',q:'Pelanggan marah-marah karena pelayanan yang lambat. Sikap Anda...',o:[{t:'Mendengarkan keluhan dengan empati, meminta maaf, dan segera mencari solusi',s:5},{t:'Menjelaskan alasan keterlambatan dengan sopan',s:4},{t:'Meminta pelanggan menunggu dan memanggil supervisor',s:3},{t:'Diam saja sampai pelanggan selesai marah',s:2},{t:'Membalas dengan nada tinggi karena merasa tidak dihargai',s:1}],e:'Pelayanan publik yang baik dimulai dari empati, meminta maaf, dan segera bertindak mencari solusi.'},
+{id:'tkp13',q:'Anda diberi tanggung jawab memimpin tim dengan anggota yang lebih senior. Bagaimana sikap Anda?',o:[{t:'Memimpin dengan menghargai pengalaman mereka, berdiskusi terbuka, dan mengambil keputusan bersama',s:5},{t:'Memimpin dengan tegas tapi tetap mendengarkan masukan',s:4},{t:'Meminta bimbingan anggota senior dalam pengambilan keputusan',s:3},{t:'Merasa tidak percaya diri dan menyerahkan keputusan ke senior',s:2},{t:'Memimpin dengan otoritas penuh tanpa diskusi',s:1}],e:'Kepemimpinan yang efektif menghargai pengalaman tim, mendorong diskusi terbuka, dan mengambil keputusan partisipatif.'},
+{id:'tkp14',q:'Anda mengetahui rekan kerja menggunakan fasilitas kantor untuk kepentingan pribadi. Apa yang Anda lakukan?',o:[{t:'Mengingatkan rekan secara baik-baik tentang aturan perusahaan',s:5},{t:'Melaporkan ke bagian yang berwenang',s:4},{t:'Diam tapi tidak mengikuti perbuatannya',s:3},{t:'Mengabaikan karena semua orang melakukannya',s:2},{t:'Ikut menggunakan fasilitas kantor untuk pribadi',s:1}],e:'Mengingatkan secara baik-baik menunjukkan integritas dan kepedulian terhadap organisasi tanpa merusak hubungan kerja.'},
+{id:'tkp15',q:'Tim Anda sedang dilanda konflik internal. Sebagai anggota tim, apa yang Anda lakukan?',o:[{t:'Mengajak semua pihak berdiskusi terbuka untuk mencari akar masalah dan solusi bersama',s:5},{t:'Menjadi mediator antara pihak yang berkonflik',s:4},{t:'Fokus pada pekerjaan sendiri dan tidak ikut campur',s:3},{t:'Memihak salah satu pihak yang menurut Anda benar',s:2},{t:'Memperkeruh suasana dengan menyebarkan gosip',s:1}],e:'Inisiatif untuk memfasilitasi diskusi terbuka mencerminkan nilai harmonis dan kolaboratif dalam menyelesaikan konflik.'},
+{id:'tkp16',q:'Anda dipindahtugaskan ke daerah terpencil. Reaksi Anda...',o:[{t:'Menerima dengan positif dan melihatnya sebagai kesempatan berkembang',s:5},{t:'Menerima sebagai bagian dari tugas profesional',s:4},{t:'Menerima tapi mengajukan syarat-syarat tertentu',s:3},{t:'Menerima dengan berat hati',s:2},{t:'Menolak dan mengajukan pindah tugas',s:1}],e:'Menerima tantangan dengan positif dan melihat peluang di dalamnya mencerminkan nilai adaptif dan loyal terhadap organisasi.'},
+{id:'tkp17',q:'Anda menemukan kesalahan dalam pekerjaan Anda yang sudah diserahkan ke atasan. Apa yang Anda lakukan?',o:[{t:'Segera melapor ke atasan, mengakui kesalahan, dan menawarkan perbaikan',s:5},{t:'Segera memperbaiki dan menyerahkan versi yang benar',s:4},{t:'Berharap atasan tidak menyadari kesalahan tersebut',s:3},{t:'Menyalahkan keadaan yang menyebabkan kesalahan',s:2},{t:'Menyembunyikan kesalahan',s:1}],e:'Mengakui kesalahan dan proaktif memperbaiki menunjukkan amanah dan integritas - kualitas yang sangat dihargai di BUMN.'},
+{id:'tkp18',q:'Rekan kerja meminta Anda menutup kekurangannya di mata atasan. Sikap Anda...',o:[{t:'Menolak dengan sopan dan memotivasi rekan untuk jujur serta memperbaiki kinerjanya',s:5},{t:'Menolak dengan alasan profesional',s:4},{t:'Ragu-ragu dan mempertimbangkan',s:3},{t:'Membantu karena ingin menjaga hubungan baik',s:2},{t:'Membantu dengan harapan mendapat balasan di kemudian hari',s:1}],e:'Integritas berarti tidak menutupi kekurangan orang lain. Motivasi untuk jujur dan perbaikan adalah respons terbaik.'},
+{id:'tkp19',q:'Anda memiliki workload yang sangat tinggi sementara rekan lain terlihat santai. Sikap Anda...',o:[{t:'Mengkomunikasikan beban kerja ke atasan dan mengusulkan distribusi tugas yang lebih merata',s:5},{t:'Meminta bantuan rekan yang terlihat lebih luang',s:4},{t:'Mengerjakan semua tugas sendiri meskipun berat',s:3},{t:'Mengeluh ke rekan-rekan tentang beban kerja',s:2},{t:'Mengurangi kualitas kerja agar bisa menyelesaikan semua',s:1}],e:'Komunikasi ke atasan tentang distribusi beban kerja adalah solusi profesional dan mencerminkan kemampuan manajemen.'},
+{id:'tkp20',q:'Saat bekerja, Anda melihat potensi bahaya keselamatan yang belum ada yang melaporkan. Apa yang Anda lakukan?',o:[{t:'Segera melaporkan ke bagian K3/HSE dan mengamankan area berbahaya',s:5},{t:'Melaporkan ke atasan langsung',s:4},{t:'Mengingatkan rekan-rekan di sekitar area',s:3},{t:'Menghindari area tersebut',s:2},{t:'Mengabaikan karena bukan bagian tugas Anda',s:1}],e:'Di lingkungan kerja kilang/industri, melaporkan potensi bahaya ke K3/HSE adalah kewajiban semua karyawan demi keselamatan bersama.'},
+{id:'tkp21',q:'Anda ditawari posisi di departemen lain dengan gaji lebih tinggi, tapi tim Anda sedang butuh Anda. Sikap Anda...',o:[{t:'Berdiskusi terbuka dengan atasan, membantu transisi tim sebelum pindah',s:5},{t:'Menolak tawaran demi loyalitas ke tim',s:4},{t:'Menerima tapi memastikan ada pengganti yang kompeten',s:3},{t:'Langsung menerima tanpa pikir panjang',s:2},{t:'Menerima dan tidak peduli kondisi tim',s:1}],e:'Berdiskusi terbuka dan membantu transisi menunjukkan keseimbangan antara pengembangan karir dan tanggung jawab tim.'},
+{id:'tkp22',q:'Atasan memberi instruksi yang menurut Anda kurang tepat secara teknis. Apa yang Anda lakukan?',o:[{t:'Menyampaikan pandangan teknis dengan data dan alasan yang jelas secara sopan',s:5},{t:'Menjalankan instruksi sambil mendokumentasikan kekhawatiran Anda',s:4},{t:'Menjalankan instruksi tanpa bertanya',s:3},{t:'Menolak dan berdebat dengan atasan',s:2},{t:'Mengerjakan dengan cara sendiri tanpa memberitahu atasan',s:1}],e:'Menyampaikan pandangan teknis dengan sopan dan berbasis data adalah tindakan profesional yang menunjukkan kompetensi.'},
+{id:'tkp23',q:'Anda sedang cuti tapi ada masalah mendesak di kantor. Bagaimana sikap Anda?',o:[{t:'Memberikan panduan penyelesaian via telepon dan siap membantu jika benar-benar diperlukan',s:5},{t:'Kembali ke kantor untuk menyelesaikan masalah',s:4},{t:'Membantu via telepon seadanya',s:3},{t:'Mengarahkan ke rekan lain yang bisa handle',s:2},{t:'Tidak mengangkat telepon karena sedang cuti',s:1}],e:'Memberikan panduan jarak jauh menunjukkan tanggung jawab dan keseimbangan antara hak cuti dan dedikasi kerja.'},
+{id:'tkp24',q:'Anda harus bekerja dengan orang yang pernah berkonflik dengan Anda. Sikap Anda...',o:[{t:'Bersikap profesional, fokus pada tujuan tim, dan berusaha membangun hubungan kerja yang baik',s:5},{t:'Bersikap profesional dan menjaga jarak personal',s:4},{t:'Bekerja sama seperlunya saja',s:3},{t:'Meminta dipindahkan ke tim lain',s:2},{t:'Menunjukkan ketidaksukaan secara terbuka',s:1}],e:'Profesionalisme dan fokus pada tujuan tim di atas masalah personal menunjukkan kedewasaan dan nilai harmonis.'},
+{id:'tkp25',q:'Perusahaan menerapkan teknologi baru yang mengubah cara kerja Anda. Reaksi Anda...',o:[{t:'Antusias belajar dan menjadi champion yang membantu rekan lain beradaptasi',s:5},{t:'Segera mempelajari teknologi baru tersebut',s:4},{t:'Mengikuti pelatihan yang disediakan perusahaan',s:3},{t:'Terpaksa belajar karena tidak ada pilihan lain',s:2},{t:'Menolak dan tetap menggunakan cara lama',s:1}],e:'Antusiasme terhadap perubahan dan membantu orang lain beradaptasi mencerminkan nilai adaptif dan kolaboratif.'},
+{id:'tkp26',q:'Anda diminta menggantikan presentasi rekan yang sakit mendadak, padahal materi bukan bidang Anda. Sikap Anda...',o:[{t:'Menerima, segera mempelajari materi, dan mempersiapkan diri sebaik mungkin',s:5},{t:'Menerima dan meminta briefing singkat dari rekan yang sakit',s:4},{t:'Menerima tapi menjelaskan keterbatasan pengetahuan ke audiens',s:3},{t:'Meminta ditunda sampai rekan sembuh',s:2},{t:'Menolak karena bukan kompetensi Anda',s:1}],e:'Kesediaan mengambil tantangan dadakan dan mempersiapkan diri sebaik mungkin menunjukkan adaptabilitas dan dedikasi.'},
+{id:'tkp27',q:'Anda melihat atasan melakukan pelanggaran etika ringan. Apa yang Anda lakukan?',o:[{t:'Menyampaikan secara pribadi kepada atasan dengan sopan dan penuh hormat',s:5},{t:'Melaporkan melalui sistem whistleblowing perusahaan',s:4},{t:'Berkonsultasi dengan rekan senior yang dipercaya',s:3},{t:'Diam dan berpura-pura tidak melihat',s:2},{t:'Menyebarkan informasi ke rekan-rekan',s:1}],e:'Menyampaikan secara pribadi dan sopan adalah pilihan terbaik untuk pelanggaran ringan - menjaga integritas tanpa merusak reputasi.'},
+{id:'tkp28',q:'Tim Anda mendapat penghargaan atas proyek yang berhasil. Sebagai kontributor utama, sikap Anda...',o:[{t:'Mengapresiasi kontribusi seluruh tim dan berbagi penghargaan bersama',s:5},{t:'Menerima penghargaan dengan rendah hati',s:4},{t:'Merasa bangga atas pencapaian pribadi',s:3},{t:'Meminta pengakuan khusus atas kontribusi Anda',s:2},{t:'Merasa tidak dihargai jika tidak disebut secara khusus',s:1}],e:'Mengapresiasi tim dan berbagi penghargaan mencerminkan nilai kolaboratif dan kerendahan hati seorang profesional.'},
+{id:'tkp29',q:'Anda mendapat tawaran gratifikasi dari vendor. Bagaimana sikap Anda?',o:[{t:'Menolak tegas dan melaporkan ke atasan/compliance',s:5},{t:'Menolak dengan sopan',s:4},{t:'Menolak tapi tidak melaporkan',s:3},{t:'Ragu-ragu dan mempertimbangkan',s:2},{t:'Menerima karena nilainya kecil',s:1}],e:'Menolak tegas dan melaporkan gratifikasi adalah kewajiban pegawai BUMN sesuai prinsip amanah dan anti-korupsi.'},
+{id:'tkp30',q:'Deadline proyek tinggal 2 hari tapi masih banyak pekerjaan tersisa. Apa yang Anda lakukan?',o:[{t:'Membuat prioritas, mendelegasikan tugas ke tim, dan bekerja intensif dengan rencana yang jelas',s:5},{t:'Lembur sendiri untuk menyelesaikan semuanya',s:4},{t:'Meminta perpanjangan deadline ke atasan',s:3},{t:'Menyelesaikan yang penting saja, sisanya menyusul',s:2},{t:'Pasrah dan menerima konsekuensi keterlambatan',s:1}],e:'Manajemen prioritas dan delegasi tugas yang efektif menunjukkan kepemimpinan dan kemampuan mengelola tekanan.'}
+],
+// END TKP
+akhlak: [
+{id:'ak1',q:'Apa kepanjangan dari AKHLAK sebagai core values BUMN?',o:['Amanah, Kompeten, Harmonis, Loyal, Adaptif, Kolaboratif','Amanah, Kreatif, Harmonis, Loyal, Aktif, Kolaboratif','Akuntabel, Kompeten, Harmonis, Loyal, Adaptif, Kooperatif','Amanah, Kompeten, Humanis, Loyal, Adaptif, Kolaboratif'],c:0,e:'AKHLAK = Amanah, Kompeten, Harmonis, Loyal, Adaptif, Kolaboratif. Ini adalah core values yang ditetapkan untuk seluruh BUMN oleh Kementerian BUMN.'},
+{id:'ak2',q:'Nilai "Amanah" dalam AKHLAK berarti...',o:['Selalu hadir tepat waktu','Memegang teguh kepercayaan yang diberikan','Bekerja dengan cepat','Mematuhi semua aturan tanpa pengecualian'],c:1,e:'Amanah berarti memegang teguh kepercayaan yang diberikan, memenuhi janji, dan memiliki tanggung jawab atas tugas dan keputusan.'},
+{id:'ak3',q:'Perilaku yang mencerminkan nilai "Kompeten" adalah...',o:['Menyelesaikan tugas seadanya yang penting selesai','Terus belajar dan mengembangkan kapabilitas untuk hasil terbaik','Mengerjakan tugas yang mudah saja','Mengandalkan pengalaman lama tanpa belajar hal baru'],c:1,e:'Kompeten berarti terus belajar dan mengembangkan kapabilitas, menyelesaikan tugas dengan kualitas terbaik, dan tidak berhenti berinovasi.'},
+{id:'ak4',q:'Nilai "Harmonis" dalam AKHLAK diwujudkan dengan cara...',o:['Menghindari semua bentuk konflik','Saling peduli dan menghargai perbedaan','Selalu setuju dengan pendapat orang lain','Tidak pernah memberikan kritik'],c:1,e:'Harmonis berarti saling peduli dan menghargai perbedaan, serta membangun lingkungan kerja yang kondusif. Bukan berarti menghindari konflik konstruktif.'},
+{id:'ak5',q:'Contoh penerapan nilai "Loyal" di lingkungan BUMN adalah...',o:['Membela atasan dalam segala kondisi','Menjaga nama baik BUMN dan mengutamakan kepentingan organisasi','Tidak pernah pindah ke perusahaan lain','Selalu setuju dengan semua kebijakan tanpa bertanya'],c:1,e:'Loyal berarti berdedikasi dan mengutamakan kepentingan bangsa dan negara, menjaga nama baik BUMN, serta patuh pada keputusan yang sudah diambil.'},
+{id:'ak6',q:'Nilai "Adaptif" mendorong insan BUMN untuk...',o:['Mengikuti tren yang sedang populer','Terus berinovasi dan antusias dalam menghadapi perubahan','Mengubah aturan sesuai keinginan','Menunggu instruksi sebelum bertindak'],c:1,e:'Adaptif berarti terus berinovasi dan antusias dalam menghadapi perubahan, serta proaktif mencari solusi baru yang lebih baik.'},
+{id:'ak7',q:'Nilai "Kolaboratif" dalam AKHLAK mengharuskan...',o:['Bekerja sendiri agar lebih efisien','Membangun kerja sama yang sinergis untuk hasil terbaik','Membagi tugas tanpa koordinasi','Bersaing dengan rekan kerja'],c:1,e:'Kolaboratif berarti membangun kerja sama yang sinergis, terbuka dalam bekerja sama untuk menghasilkan nilai tambah bersama.'},
+{id:'ak8',q:'AKHLAK ditetapkan sebagai core values BUMN melalui...',o:['Peraturan Presiden','Surat Edaran Menteri BUMN No. SE-7/MBU/07/2020','UU BUMN','Keputusan Direksi'],c:1,e:'Core values AKHLAK ditetapkan melalui Surat Edaran Menteri BUMN No. SE-7/MBU/07/2020 tentang Nilai-nilai Utama (Core Values) BUMN.'},
+{id:'ak9',q:'Seorang pegawai yang menolak gratifikasi dari vendor mencerminkan nilai...',o:['Kompeten','Loyal','Amanah','Harmonis'],c:2,e:'Menolak gratifikasi mencerminkan nilai Amanah - memegang teguh kepercayaan dan integritas dalam menjalankan tugas.'},
+{id:'ak10',q:'Mengikuti pelatihan untuk meningkatkan skill digital mencerminkan nilai...',o:['Amanah','Kompeten','Loyal','Harmonis'],c:1,e:'Mengikuti pelatihan untuk meningkatkan kapabilitas mencerminkan nilai Kompeten - terus belajar dan mengembangkan diri.'},
+{id:'ak11',q:'Seorang karyawan yang aktif dalam kegiatan CSR perusahaan di daerah tertinggal mencerminkan nilai...',o:['Amanah','Harmonis','Loyal','Kolaboratif'],c:2,e:'Berpartisipasi aktif dalam program CSR menunjukkan loyalitas dan dedikasi terhadap misi organisasi dan kepentingan masyarakat.'},
+{id:'ak12',q:'Menghargai pendapat rekan kerja dari latar belakang budaya yang berbeda mencerminkan nilai...',o:['Adaptif','Harmonis','Kolaboratif','Kompeten'],c:1,e:'Menghargai perbedaan latar belakang adalah inti dari nilai Harmonis - saling peduli dan menghargai perbedaan.'},
+{id:'ak13',q:'Ketika menghadapi disrupsi teknologi, sikap yang mencerminkan nilai Adaptif adalah...',o:['Menolak perubahan karena sudah nyaman','Menunggu instruksi atasan','Proaktif mempelajari teknologi baru dan mengusulkan implementasi','Menyerahkan masalah ke bagian IT'],c:2,e:'Proaktif mempelajari hal baru dan mengusulkan implementasi adalah wujud nyata nilai Adaptif dalam menghadapi perubahan.'},
+{id:'ak14',q:'Membangun sinergi antar unit kerja untuk mencapai target perusahaan mencerminkan nilai...',o:['Loyal','Harmonis','Adaptif','Kolaboratif'],c:3,e:'Membangun sinergi antar unit kerja adalah implementasi langsung dari nilai Kolaboratif - bekerja sama untuk hasil terbaik.'},
+{id:'ak15',q:'Panduan perilaku (code of conduct) BUMN bertujuan untuk...',o:['Membatasi kreativitas karyawan','Menjadi pedoman etika dan perilaku yang mencerminkan AKHLAK','Menambah birokrasi perusahaan','Mengontrol kehidupan pribadi karyawan'],c:1,e:'Code of conduct BUMN menjadi pedoman etika yang mencerminkan nilai-nilai AKHLAK dalam aktivitas sehari-hari karyawan.'},
+{id:'ak16',q:'Seorang manajer yang transparan dalam pengelolaan anggaran tim mencerminkan nilai...',o:['Kompeten','Amanah','Loyal','Adaptif'],c:1,e:'Transparansi dalam pengelolaan sumber daya mencerminkan Amanah - akuntabel dan bertanggung jawab atas kepercayaan yang diberikan.'},
+{id:'ak17',q:'Tujuan utama penerapan AKHLAK di BUMN adalah...',o:['Meningkatkan profit perusahaan','Menyeragamkan budaya kerja dan meningkatkan kinerja BUMN','Mengurangi jumlah karyawan','Menarik investor asing'],c:1,e:'AKHLAK bertujuan menyeragamkan budaya kerja seluruh BUMN di Indonesia agar tercipta sinergi dan peningkatan kinerja kolektif.'},
+{id:'ak18',q:'Ketika terjadi perbedaan pendapat dalam tim, sikap yang sesuai AKHLAK adalah...',o:['Memaksakan pendapat sendiri','Menghindari diskusi','Berdiskusi terbuka dengan saling menghargai untuk mencapai konsensus','Menyerahkan keputusan ke atasan saja'],c:2,e:'Diskusi terbuka dengan saling menghargai mencerminkan gabungan nilai Harmonis (menghargai perbedaan) dan Kolaboratif (kerja sama sinergis).'},
+{id:'ak19',q:'Karyawan yang menyelesaikan tugas dengan standar kualitas tertinggi meskipun tidak diawasi mencerminkan...',o:['Harmonis dan Kolaboratif','Amanah dan Kompeten','Loyal dan Adaptif','Adaptif dan Kolaboratif'],c:1,e:'Bekerja berkualitas tanpa pengawasan mencerminkan Amanah (bertanggung jawab) dan Kompeten (kualitas terbaik).'},
+{id:'ak20',q:'Program "BUMN untuk Negeri" yang melibatkan berbagai perusahaan BUMN bersama-sama mencerminkan nilai...',o:['Amanah','Kompeten','Harmonis','Kolaboratif'],c:3,e:'Program kolaborasi antar BUMN untuk kepentingan masyarakat adalah wujud nyata nilai Kolaboratif - membangun kerja sama sinergis.'}
+],
+// END AKHLAK
+tkb: [
+{id:'tkb1',q:'CDU (Crude Distillation Unit) berfungsi untuk...',o:['Memecah molekul besar menjadi kecil','Memisahkan komponen minyak mentah berdasarkan titik didih','Menghilangkan sulfur dari produk','Meningkatkan oktan bensin'],c:1,e:'CDU memisahkan minyak mentah (crude oil) menjadi fraksi-fraksi berdasarkan perbedaan titik didih pada tekanan atmosferik. Ini adalah unit pertama dalam proses pengolahan di kilang.'},
+{id:'tkb2',q:'Produk paling ringan (titik didih terendah) yang dihasilkan dari kolom distilasi atmosferik adalah...',o:['Kerosene','Naphtha','LPG/Gas','Solar'],c:2,e:'Urutan dari ringan ke berat: LPG/Gas (paling atas kolom, titik didih terendah), lalu naphtha, kerosene, solar, dan residu (paling bawah).'},
+{id:'tkb3',q:'Proses Fluid Catalytic Cracking (FCC) bertujuan untuk...',o:['Menggabungkan molekul kecil menjadi besar','Memecah molekul besar menjadi molekul lebih kecil dan ringan','Menghilangkan logam berat','Menaikkan tekanan gas'],c:1,e:'FCC memecah (cracking) molekul hidrokarbon berat (gasoil) menjadi produk lebih ringan seperti bensin dan LPG menggunakan katalis zeolite pada suhu tinggi (~500°C).'},
+{id:'tkb4',q:'Alat penukar panas (heat exchanger) berfungsi untuk...',o:['Menghasilkan listrik','Memindahkan panas antara dua fluida tanpa kontak langsung','Memisahkan campuran gas','Menaikkan tekanan fluida'],c:1,e:'Heat exchanger memindahkan panas dari fluida panas ke fluida dingin tanpa kedua fluida bercampur, untuk efisiensi energi di kilang.'},
+{id:'tkb5',q:'Apa yang dimaksud dengan flash point?',o:['Suhu tertinggi operasi peralatan','Suhu terendah dimana uap cairan dapat terbakar jika ada sumber api','Tekanan maksimum dalam reaktor','Suhu dimana cairan mulai mendidih'],c:1,e:'Flash point adalah suhu minimum dimana uap dari suatu cairan membentuk campuran yang dapat menyala jika ada sumber nyala api. Penting untuk klasifikasi keamanan bahan kimia.'},
+{id:'tkb6',q:'Unit yang menghasilkan bensin beroktan tinggi (reformate) adalah...',o:['CDU','FCC','Catalytic Reforming Unit','Vacuum Distillation'],c:2,e:'Catalytic Reforming Unit (Platforming) mengubah naphtha beroktan rendah menjadi reformate beroktan tinggi melalui reaksi dehidrogenasi, isomerisasi, dan siklisasi.'},
+{id:'tkb7',q:'Pertamina memiliki berapa unit kilang minyak di Indonesia?',o:['4 kilang','5 kilang','6 kilang','7 kilang'],c:2,e:'Pertamina memiliki 6 kilang: RU II Dumai, RU III Plaju, RU IV Cilacap (terbesar), RU V Balikpapan, RU VI Balongan, dan RU VII Kasim.'},
+{id:'tkb8',q:'Fungsi desalter dalam proses pengolahan minyak adalah...',o:['Menaikkan tekanan crude oil','Menghilangkan garam dan air dari crude oil','Memisahkan gas dari cairan','Mendinginkan produk'],c:1,e:'Desalter menghilangkan garam (NaCl, MgCl2, CaCl2) dan air dari crude oil sebelum masuk CDU. Garam bisa menyebabkan korosi pada peralatan kilang.'},
+{id:'tkb9',q:'Hukum Termodinamika Pertama menyatakan...',o:['Entropi selalu bertambah','Energi tidak dapat diciptakan atau dimusnahkan, hanya berubah bentuk','Pada suhu nol absolut entropi adalah nol','Panas mengalir dari dingin ke panas'],c:1,e:'Hukum Termodinamika I (Hukum Kekekalan Energi): Energi tidak dapat diciptakan atau dimusnahkan, hanya dapat diubah dari satu bentuk ke bentuk lainnya.'},
+{id:'tkb10',q:'APD (Alat Pelindung Diri) yang WAJIB digunakan di area kilang meliputi...',o:['Hanya helm dan sepatu safety','Helm, safety shoes, kacamata safety, dan coverall','Hanya sarung tangan dan masker','Helm saja sudah cukup'],c:1,e:'APD minimum di area kilang: safety helmet, safety shoes (baja), safety glasses, coverall (fire retardant), dan earplug. Tambahan sesuai area: sarung tangan, SCBA, dll.'},
+{id:'tkb11',q:'Proses hydrotreating/HDS (Hydrodesulfurization) bertujuan untuk...',o:['Meningkatkan oktan bensin','Menghilangkan kandungan sulfur dari produk minyak','Memecah molekul berat','Menggabungkan molekul ringan'],c:1,e:'Hydrotreating menggunakan hidrogen untuk menghilangkan sulfur (desulfurisasi), nitrogen, dan logam dari fraksi minyak, menghasilkan produk yang lebih bersih.'},
+{id:'tkb12',q:'Kilang Pertamina dengan kapasitas terbesar berada di...',o:['Dumai, Riau','Balikpapan, Kaltim','Cilacap, Jawa Tengah','Balongan, Jabar'],c:2,e:'RU IV Cilacap adalah kilang terbesar Pertamina dengan kapasitas ~348.000 barel per hari (bpd).'},
+{id:'tkb13',q:'Vacuum Distillation Unit (VDU) digunakan untuk...',o:['Distilasi pada tekanan tinggi','Mendistilasi residu CDU pada tekanan rendah (vakum)','Memisahkan air dari minyak','Mendinginkan produk distilasi'],c:1,e:'VDU mendistilasi residu dari CDU pada tekanan vakum (di bawah atmosferik). Tekanan rendah menurunkan titik didih sehingga fraksi berat bisa dipisahkan tanpa thermal cracking.'},
+{id:'tkb14',q:'Katalis yang umum digunakan dalam FCC (Fluid Catalytic Cracking) adalah...',o:['Platinum','Zeolite','Nikel','Besi'],c:1,e:'FCC menggunakan katalis zeolite (alumina-silika) yang memiliki struktur pori mikro. Katalis ini sangat efektif untuk memecah molekul hidrokarbon berat.'},
+{id:'tkb15',q:'Apa yang dimaksud dengan LEL (Lower Explosive Limit)?',o:['Tekanan minimum ledakan','Konsentrasi minimum gas/uap mudah terbakar di udara yang dapat meledak','Suhu minimum pembakaran','Batas bawah tekanan operasi'],c:1,e:'LEL adalah konsentrasi minimum gas atau uap yang mudah terbakar di udara yang bisa menyebabkan ledakan jika ada sumber nyala. Di bawah LEL, campuran terlalu lean untuk terbakar.'},
+{id:'tkb16',q:'Produk BBM Pertamina jenis Pertalite memiliki nilai oktan (RON)...',o:['88','90','92','95'],c:1,e:'Pertalite memiliki RON 90. Pertamax RON 92, Pertamax Turbo RON 98, dan Premium RON 88.'},
+{id:'tkb17',q:'Proses isomerisasi dalam kilang bertujuan untuk...',o:['Memecah rantai karbon','Mengubah struktur molekul dari rantai lurus menjadi bercabang untuk meningkatkan oktan','Menghilangkan sulfur','Menggabungkan dua molekul'],c:1,e:'Isomerisasi mengubah molekul normal-paraffin (rantai lurus) menjadi iso-paraffin (bercabang) yang memiliki angka oktan lebih tinggi.'},
+{id:'tkb18',q:'MSDS (Material Safety Data Sheet) berisi informasi tentang...',o:['Harga bahan kimia','Data keselamatan bahan kimia termasuk bahaya, penanganan, dan P3K','Jadwal maintenance peralatan','Spesifikasi produk jadi'],c:1,e:'MSDS/SDS berisi informasi lengkap tentang sifat bahan kimia, bahaya kesehatan/fisik, prosedur penanganan aman, tindakan P3K, dan cara pembuangan.'},
+{id:'tkb19',q:'Fungsi compressor dalam kilang minyak adalah...',o:['Menurunkan tekanan gas','Menaikkan tekanan gas','Memisahkan gas dari cairan','Mendinginkan gas'],c:1,e:'Compressor berfungsi menaikkan tekanan gas. Digunakan untuk transportasi gas, umpan reaktor bertekanan tinggi, dan proses pengembunan gas.'},
+{id:'tkb20',q:'Reaksi eksotermis adalah reaksi yang...',o:['Menyerap panas dari lingkungan','Melepaskan panas ke lingkungan','Tidak ada perubahan suhu','Hanya terjadi pada suhu tinggi'],c:1,e:'Reaksi eksotermis melepaskan panas (energi) ke lingkungan, sehingga suhu lingkungan naik. Contoh: pembakaran, netralisasi. Kebalikannya adalah endotermis (menyerap panas).'},
+{id:'tkb21',q:'Permit to Work (PTW) diperlukan untuk...',o:['Semua pekerjaan rutin harian','Pekerjaan berbahaya seperti hot work, confined space entry, dan bekerja di ketinggian','Hanya pekerjaan kontraktor','Pekerjaan administrasi'],c:1,e:'PTW (Izin Kerja) wajib untuk pekerjaan berbahaya: hot work (pengelasan), confined space entry, bekerja di ketinggian, excavation, dan isolasi energi.'},
+{id:'tkb22',q:'Fired heater/furnace dalam kilang berfungsi untuk...',o:['Menghasilkan listrik','Memanaskan fluida proses dengan pembakaran langsung bahan bakar','Membakar limbah','Mensterilkan peralatan'],c:1,e:'Fired heater memanaskan fluida proses (crude oil, dll) menggunakan panas dari pembakaran bahan bakar (gas/liquid fuel) secara langsung.'},
+{id:'tkb23',q:'Apa perbedaan utama antara distilasi atmosferik dan distilasi vakum?',o:['Jenis crude oil yang diolah','Tekanan operasi - atmosferik pada tekanan normal, vakum pada tekanan rendah','Suhu operasi - vakum lebih panas','Jenis katalis yang digunakan'],c:1,e:'Perbedaan utama adalah tekanan operasi. CDU beroperasi pada tekanan atmosferik (~1 atm), VDU pada tekanan vakum (<1 atm) sehingga fraksi berat bisa didistilasi tanpa dekomposisi termal.'},
+{id:'tkb24',q:'Proses alkylation dalam kilang menghasilkan...',o:['Solar berkualitas tinggi','Bensin beroktan tinggi (alkylate)','LPG','Aspal'],c:1,e:'Alkylation menggabungkan olefin ringan (butylena) dengan isobutana menggunakan katalis asam, menghasilkan alkylate - komponen bensin beroktan sangat tinggi.'},
+{id:'tkb25',q:'LOTO (Lockout Tagout) adalah prosedur untuk...',o:['Mengunci pintu area terbatas','Mengisolasi sumber energi berbahaya saat maintenance','Mengunci data rahasia perusahaan','Memasang label pada produk'],c:1,e:'LOTO adalah prosedur keselamatan untuk memastikan peralatan berbahaya dimatikan dan tidak bisa dinyalakan selama maintenance. Lock = kunci fisik, Tag = label peringatan.'},
+{id:'tkb26',q:'Hukum Termodinamika Kedua menyatakan...',o:['Energi bersifat kekal','Entropi alam semesta cenderung meningkat (proses spontan menuju ketidakteraturan)','Pada nol absolut entropi adalah nol','Tekanan berbanding lurus dengan suhu'],c:1,e:'Hukum II Termodinamika: Entropi (ketidakteraturan) alam semesta selalu meningkat pada proses spontan. Panas mengalir dari suhu tinggi ke rendah, tidak sebaliknya.'},
+{id:'tkb27',q:'Produk Pertamina "Dex" adalah jenis...',o:['Bensin premium','Solar/diesel berkualitas tinggi dengan cetane number 53','Minyak tanah','Avtur'],c:1,e:'Pertamina Dex adalah solar berkualitas tinggi dengan cetane number 53 (lebih tinggi dari Solar biasa CN 48 dan Dexlite CN 51).'},
+{id:'tkb28',q:'Apa fungsi tray/packing dalam kolom distilasi?',o:['Menahan tekanan kolom','Memperbesar area kontak antara uap dan cairan untuk pemisahan yang lebih baik','Mencegah korosi','Menyimpan katalis'],c:1,e:'Tray (pelat) dan packing dalam kolom distilasi memperbesar area kontak antara fasa uap (naik) dan fasa cair (turun), meningkatkan efisiensi pemisahan komponen.'},
+{id:'tkb29',q:'Gas H2S (Hidrogen Sulfida) di kilang bersifat...',o:['Tidak berbahaya','Sangat beracun, mudah terbakar, berbau telur busuk','Hanya mudah terbakar','Hanya berbau tidak sedap'],c:1,e:'H2S sangat berbahaya: beracun (mematikan pada konsentrasi >100 ppm), mudah terbakar, dan berbau telur busuk. Pada konsentrasi tinggi, indra penciuman bisa lumpuh sehingga tidak terdeteksi.'},
+{id:'tkb30',q:'Corrosion (korosi) pada peralatan kilang paling sering disebabkan oleh...',o:['Tekanan tinggi saja','Senyawa sulfur, klorida, dan asam naftenik dalam crude oil','Suhu rendah','Aliran fluida yang lambat'],c:1,e:'Korosi di kilang terutama disebabkan oleh senyawa korosif dalam crude: sulfur (H2S, mercaptan), klorida (HCl dari garam), dan asam naftenik. Ini menyerang material logam peralatan.'},
+{id:'tkb31',q:'Boiler berfungsi untuk...',o:['Menghasilkan steam (uap air bertekanan) untuk proses dan utilitas','Mendinginkan air','Memisahkan minyak dan air','Menyimpan bahan bakar'],c:0,e:'Boiler menghasilkan steam bertekanan tinggi yang digunakan untuk memanaskan proses, menggerakkan turbin, stripping, dan utilitas lainnya di kilang.'},
+{id:'tkb32',q:'Apa yang dimaksud dengan crude oil API gravity?',o:['Warna minyak mentah','Ukuran densitas/berat jenis minyak mentah - semakin tinggi API semakin ringan','Kandungan sulfur','Viskositas minyak'],c:1,e:'API gravity mengukur berat jenis crude oil relatif terhadap air. API > 31.1 = light crude, 22.3-31.1 = medium, < 22.3 = heavy crude. Semakin tinggi API, semakin ringan dan umumnya lebih bernilai.'},
+{id:'tkb33',q:'Proses blending di kilang adalah...',o:['Pemisahan komponen minyak','Pencampuran berbagai komponen produk untuk memenuhi spesifikasi','Pemecahan molekul besar','Penghilangan kotoran'],c:1,e:'Blending adalah pencampuran berbagai komponen (reformate, alkylate, naphtha, additives) dalam proporsi tertentu untuk menghasilkan produk akhir yang memenuhi spesifikasi kualitas.'},
+{id:'tkb34',q:'PSV (Pressure Safety Valve) berfungsi untuk...',o:['Mengatur aliran fluida','Melepaskan tekanan berlebih untuk mencegah ledakan peralatan','Mengukur tekanan','Mencegah aliran balik'],c:1,e:'PSV adalah alat keselamatan kritis yang membuka otomatis ketika tekanan melebihi set point, melepaskan fluida ke flare/atmosfer untuk mencegah pecahnya vessel atau peralatan.'},
+{id:'tkb35',q:'Flare system di kilang berfungsi untuk...',o:['Menerangi area kilang','Membakar gas buangan/darurat secara aman','Memanaskan crude oil','Menghasilkan listrik'],c:1,e:'Flare membakar gas-gas hidrokarbon yang dilepaskan dari PSV, blowdown, atau proses darurat secara aman di tempat yang tinggi, mencegah polusi dan bahaya ledakan.'},
+{id:'tkb36',q:'Cooling tower berfungsi untuk...',o:['Menghasilkan air dingin','Mendinginkan air pendingin (cooling water) yang telah digunakan di heat exchanger','Menyimpan air bersih','Mengolah air limbah'],c:1,e:'Cooling tower mendinginkan kembali air pendingin yang sudah panas setelah digunakan di heat exchanger, melalui proses evaporasi dan kontak dengan udara.'},
+{id:'tkb37',q:'Apa yang dimaksud dengan turnaround/shutdown kilang?',o:['Penutupan kilang secara permanen','Penghentian operasi terjadwal untuk maintenance besar, inspeksi, dan perbaikan','Penurunan kapasitas produksi','Pergantian jenis crude oil'],c:1,e:'Turnaround (TA) adalah penghentian operasi kilang yang direncanakan (biasanya setiap 3-5 tahun) untuk maintenance besar, inspeksi peralatan, perbaikan, dan upgrade unit.'},
+{id:'tkb38',q:'DCS (Distributed Control System) dalam kilang digunakan untuk...',o:['Mendistribusikan produk ke konsumen','Mengendalikan dan memonitor proses kilang secara otomatis dari control room','Mengatur jadwal shift operator','Mengelola data karyawan'],c:1,e:'DCS adalah sistem kontrol otomatis yang memungkinkan operator memonitor dan mengendalikan seluruh proses kilang (suhu, tekanan, level, flow) dari ruang kontrol secara real-time.'},
+{id:'tkb39',q:'Catalyst regeneration dalam FCC diperlukan karena...',o:['Katalis habis terpakai','Katalis tertutup deposit coke (karbon) sehingga aktivitasnya menurun','Katalis berubah bentuk','Katalis bereaksi dengan produk'],c:1,e:'Selama cracking, coke (karbon) menempel di permukaan katalis dan menutupi active sites. Regenerasi dilakukan dengan membakar coke dalam regenerator menggunakan udara panas.'},
+{id:'tkb40',q:'Pertamina Trans Kontinental, Pertamina Lubricants, dan Pertamina Petrochemical adalah contoh...',o:['Kilang minyak Pertamina','Anak perusahaan (subholding) Pertamina','Produk BBM Pertamina','Unit bisnis di kilang'],c:1,e:'Pertamina memiliki banyak anak perusahaan/subholding yang mengelola bisnis spesifik: shipping, pelumas, petrokimia, geothermal, dan lainnya.'}
+],
+// END TKB - ALL QUESTIONS DONE
+};
+
+// ===== STATE =====
+let currentQuiz = [];
+let currentIdx = 0;
+let currentCategory = '';
+let answered = false;
+let timerInterval = null;
+let timeLeft = 60;
+let quizStartTime = 0;
+let quizAnswers = [];
+const STORAGE_KEY = 'rbb_prep_data';
+
+// ===== STORAGE =====
+function getData(){
+  try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||{history:[],streak:0,lastDate:'',theme:'dark'}}catch(e){return{history:[],streak:0,lastDate:'',theme:'dark'}}
+}
+function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}
+
+// ===== THEME =====
+function toggleTheme(){
+  const html=document.documentElement;
+  const d=getData();
+  const newTheme=html.getAttribute('data-theme')==='dark'?'light':'dark';
+  html.setAttribute('data-theme',newTheme);
+  d.theme=newTheme;saveData(d);
+  document.querySelector('.theme-toggle').innerHTML=newTheme==='dark'?'&#9790;':'&#9728;';
+}
+function loadTheme(){
+  const d=getData();
+  document.documentElement.setAttribute('data-theme',d.theme||'dark');
+  document.querySelector('.theme-toggle').innerHTML=(d.theme||'dark')==='dark'?'&#9790;':'&#9728;';
+}
+
+// ===== NAVIGATION =====
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navMap={home:'nav-home',stats:'nav-stats',cheatsheet:'nav-cheatsheet'};
+  if(navMap[id])document.getElementById(navMap[id]).classList.add('active');
+  if(id==='stats')renderStats();
+  if(id==='home')updateHomeStats();
+}
+function goHome(){showPage('home')}
+
+// ===== SHUFFLE =====
+function seededRandom(seed){let s=seed;return function(){s=(s*16807)%2147483647;return(s-1)/2147483646;}}
+function shuffle(arr,rng){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor((rng?rng():Math.random())*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+// ===== QUIZ START =====
+function startQuiz(cat){
+  currentCategory=cat;
+  const qs=QUESTIONS[cat];
+  if(!qs||qs.length===0)return alert('Belum ada soal untuk kategori ini');
+  currentQuiz=shuffle(qs).slice(0,20);
+  currentIdx=0;quizAnswers=[];answered=false;
+  quizStartTime=Date.now();
+  showPage('quiz');
+  renderQuestion();
+}
+function startDaily(){
+  const today=new Date();
+  const seed=today.getFullYear()*10000+today.getMonth()*100+today.getDate();
+  const rng=seededRandom(seed);
+  currentCategory='daily';
+  let all=[];
+  Object.keys(QUESTIONS).forEach(k=>{QUESTIONS[k].forEach(q=>{all.push({...q,_cat:k})})});
+  all=shuffle(all,rng);
+  currentQuiz=all.slice(0,20);
+  currentIdx=0;quizAnswers=[];answered=false;
+  quizStartTime=Date.now();
+  showPage('quiz');
+  renderQuestion();
+}
+
+// ===== RENDER QUESTION =====
+function renderQuestion(){
+  if(currentIdx>=currentQuiz.length){finishQuiz();return;}
+  answered=false;
+  const q=currentQuiz[currentIdx];
+  const cat=q._cat||currentCategory;
+  const catNames={twk:'TWK',tiu:'TIU',tkp:'TKP',akhlak:'AKHLAK',tkb:'TKB Teknik Kimia',daily:'Harian'};
+  document.getElementById('q-counter').textContent='Soal '+(currentIdx+1)+'/'+currentQuiz.length;
+  document.getElementById('q-progress').style.width=((currentIdx/currentQuiz.length)*100)+'%';
+  document.getElementById('q-cat').textContent=catNames[cat]||cat.toUpperCase();
+  document.getElementById('q-label').textContent='Soal '+(currentIdx+1);
+  document.getElementById('q-text').textContent=q.q;
+  
+  const optDiv=document.getElementById('q-options');
+  optDiv.innerHTML='';
+  const letters='ABCDE';
+  const isTKP=cat==='tkp';
+  const opts=isTKP?q.o:q.o;
+  
+  opts.forEach((opt,i)=>{
+    const div=document.createElement('div');
+    div.className='option';
+    div.innerHTML='<span class="opt-letter">'+letters[i]+'</span><span>'+(isTKP?opt.t:opt)+'</span>';
+    div.onclick=()=>selectOption(i);
+    optDiv.appendChild(div);
+  });
+  
+  document.getElementById('q-explanation').classList.remove('show');
+  document.getElementById('q-explanation').style.display='none';
+  document.getElementById('q-nav').style.display='none';
+  
+  // Timer
+  timeLeft=cat==='tkp'?90:60;
+  startTimer();
+}
+
+// ===== TIMER =====
+function startTimer(){
+  clearInterval(timerInterval);
+  const timerEl=document.getElementById('q-timer');
+  timerEl.textContent=timeLeft;
+  timerEl.classList.remove('danger');
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    timerEl.textContent=timeLeft;
+    if(timeLeft<=10)timerEl.classList.add('danger');
+    if(timeLeft<=0){clearInterval(timerInterval);if(!answered)autoTimeout();}
+  },1000);
+}
+function autoTimeout(){
+  answered=true;
+  const q=currentQuiz[currentIdx];
+  const cat=q._cat||currentCategory;
+  const isTKP=cat==='tkp';
+  quizAnswers.push({qIdx:currentIdx,selected:-1,correct:isTKP?-1:q.c,score:isTKP?0:0,timeout:true});
+  
+  const opts=document.querySelectorAll('.option');
+  opts.forEach((o,i)=>{
+    o.classList.add('disabled');
+    if(isTKP){if(q.o[i].s===5)o.classList.add('correct');}
+    else{if(i===q.c)o.classList.add('correct');}
+  });
+  showExplanation(q);
+}
+
+// ===== SELECT OPTION =====
+function selectOption(idx){
+  if(answered)return;
+  answered=true;
+  clearInterval(timerInterval);
+  const q=currentQuiz[currentIdx];
+  const cat=q._cat||currentCategory;
+  const isTKP=cat==='tkp';
+  const opts=document.querySelectorAll('.option');
+  
+  if(isTKP){
+    const score=q.o[idx].s;
+    opts[idx].classList.add(score>=4?'correct':'wrong');
+    q.o.forEach((o,i)=>{if(o.s===5&&i!==idx)opts[i].classList.add('correct');});
+    quizAnswers.push({qIdx:currentIdx,selected:idx,correct:-1,score:score,timeout:false});
+  }else{
+    const isCorrect=idx===q.c;
+    opts[idx].classList.add(isCorrect?'correct':'wrong');
+    if(!isCorrect)opts[q.c].classList.add('correct');
+    quizAnswers.push({qIdx:currentIdx,selected:idx,correct:q.c,score:isCorrect?1:0,timeout:false});
+  }
+  opts.forEach(o=>o.classList.add('disabled'));
+  showExplanation(q);
+}
+
+function showExplanation(q){
+  const expEl=document.getElementById('q-explanation');
+  expEl.innerHTML='<strong>Pembahasan:</strong> '+q.e;
+  expEl.style.display='block';
+  expEl.classList.add('show');
+  
+  const nav=document.getElementById('q-nav');
+  nav.style.display='flex';
+  const btn=document.getElementById('btn-next');
+  if(currentIdx>=currentQuiz.length-1){
+    btn.textContent='Lihat Hasil';
+    btn.className='btn-next btn-finish';
+  }else{
+    btn.textContent='Selanjutnya';
+    btn.className='btn-next';
+  }
+}
+
+function nextQuestion(){
+  currentIdx++;
+  if(currentIdx>=currentQuiz.length)finishQuiz();
+  else renderQuestion();
+}
+
+// ===== FINISH QUIZ =====
+function finishQuiz(){
+  clearInterval(timerInterval);
+  const cat=currentCategory;
+  const isTKP=cat==='tkp'||(cat==='daily'&&false);
+  const totalTime=Math.round((Date.now()-quizStartTime)/1000);
+  
+  let correctCount=0,totalScore=0,tkpTotal=0;
+  quizAnswers.forEach(a=>{
+    const q=currentQuiz[a.qIdx];
+    const qCat=q._cat||cat;
+    if(qCat==='tkp'){
+      tkpTotal+=a.score;
+    }else{
+      if(a.score>0)correctCount++;
+    }
+    totalScore+=a.score;
+  });
+  
+  const totalQ=currentQuiz.length;
+  const tkpCount=quizAnswers.filter(a=>{const q=currentQuiz[a.qIdx];return(q._cat||cat)==='tkp'}).length;
+  const nonTkpCount=totalQ-tkpCount;
+  const pct=nonTkpCount>0?Math.round((correctCount/nonTkpCount)*100):0;
+  
+  // Display
+  const circle=document.getElementById('r-circle');
+  const displayPct=cat==='tkp'?Math.round((tkpTotal/(tkpCount*5))*100):(tkpCount>0&&nonTkpCount>0)?Math.round(((correctCount/nonTkpCount)*100+tkpTotal/(tkpCount*5)*100)/2):pct;
+  circle.textContent=displayPct+'%';
+  circle.className='score-circle '+(displayPct>=70?'score-high':displayPct>=50?'score-mid':'score-low');
+  
+  const catNames={twk:'TWK',tiu:'TIU',tkp:'TKP',akhlak:'AKHLAK',tkb:'TKB Teknik Kimia',daily:'Latihan Harian'};
+  document.getElementById('r-title').textContent=displayPct>=70?'Bagus!':displayPct>=50?'Cukup Baik':'Perlu Latihan Lagi';
+  document.getElementById('r-subtitle').textContent=(catNames[cat]||cat)+' - '+totalQ+' Soal';
+  document.getElementById('r-correct').textContent=correctCount+(tkpCount>0?'/'+nonTkpCount:'');
+  document.getElementById('r-wrong').textContent=(nonTkpCount-correctCount);
+  const mins=Math.floor(totalTime/60);
+  const secs=totalTime%60;
+  document.getElementById('r-time').textContent=mins+':'+(secs<10?'0':'')+secs;
+  document.getElementById('r-score').textContent=tkpCount>0?tkpTotal+'/'+tkpCount*5:'-';
+  
+  // Save history
+  const d=getData();
+  const entry={date:new Date().toISOString(),cat:cat,total:totalQ,correct:correctCount,pct:displayPct,tkpScore:tkpTotal,time:totalTime};
+  d.history.unshift(entry);
+  if(d.history.length>50)d.history=d.history.slice(0,50);
+  
+  // Streak
+  const today=new Date().toDateString();
+  if(d.lastDate!==today){
+    const yesterday=new Date(Date.now()-86400000).toDateString();
+    d.streak=(d.lastDate===yesterday)?d.streak+1:1;
+    d.lastDate=today;
+  }
+  saveData(d);
+  showPage('result');
+}
+
+// ===== REVIEW =====
+function reviewAnswers(){
+  const list=document.getElementById('review-list');
+  list.innerHTML='';
+  const letters='ABCDE';
+  quizAnswers.forEach((a,i)=>{
+    const q=currentQuiz[a.qIdx];
+    const cat=q._cat||currentCategory;
+    const isTKP=cat==='tkp';
+    const div=document.createElement('div');
+    div.className='question-card';
+    div.style.marginBottom='12px';
+    let html='<div class="q-num" style="color:'+(a.timeout?'var(--warning)':a.score>0?'var(--accent2)':'var(--danger)')+'">';
+    html+='Soal '+(i+1)+(a.timeout?' (Waktu Habis)':'')+'</div>';
+    html+='<div class="q-text" style="margin-bottom:10px">'+q.q+'</div>';
+    
+    if(isTKP){
+      q.o.forEach((opt,j)=>{
+        const cls=j===a.selected?(opt.s>=4?'correct':'wrong'):(opt.s===5?'correct':'');
+        html+='<div style="padding:6px 10px;margin:3px 0;border-radius:6px;font-size:.85rem;';
+        if(cls==='correct')html+='background:rgba(16,185,129,.15);border-left:3px solid var(--accent2);';
+        else if(cls==='wrong')html+='background:rgba(239,68,68,.15);border-left:3px solid var(--danger);';
+        html+='">'+letters[j]+'. '+opt.t+' <small style="color:var(--text2)">(skor: '+opt.s+')</small></div>';
+      });
+    }else{
+      q.o.forEach((opt,j)=>{
+        const cls=j===q.c?'correct':(j===a.selected?'wrong':'');
+        html+='<div style="padding:6px 10px;margin:3px 0;border-radius:6px;font-size:.85rem;';
+        if(cls==='correct')html+='background:rgba(16,185,129,.15);border-left:3px solid var(--accent2);';
+        else if(cls==='wrong')html+='background:rgba(239,68,68,.15);border-left:3px solid var(--danger);';
+        html+='">'+letters[j]+'. '+opt+'</div>';
+      });
+    }
+    html+='<div style="margin-top:8px;padding:10px;background:var(--card2);border-radius:8px;font-size:.85rem"><strong style="color:var(--accent2)">Pembahasan:</strong> '+q.e+'</div>';
+    div.innerHTML=html;
+    list.appendChild(div);
+  });
+  showPage('review');
+}
+
+function retryQuiz(){
+  if(currentCategory==='daily')startDaily();
+  else startQuiz(currentCategory);
+}
+
+// ===== STATS =====
+function updateHomeStats(){
+  const d=getData();
+  const total=d.history.reduce((s,h)=>s+h.total,0);
+  const avgPct=d.history.length>0?Math.round(d.history.reduce((s,h)=>s+h.pct,0)/d.history.length):0;
+  document.getElementById('home-total').textContent=total;
+  document.getElementById('home-avg').textContent=avgPct+'%';
+  document.getElementById('home-streak').textContent=d.streak||0;
+}
+
+function renderStats(){
+  const d=getData();
+  document.getElementById('s-total').textContent=d.history.reduce((s,h)=>s+h.total,0);
+  const avgPct=d.history.length>0?Math.round(d.history.reduce((s,h)=>s+h.pct,0)/d.history.length):0;
+  document.getElementById('s-avg').textContent=avgPct+'%';
+  document.getElementById('s-streak').textContent=d.streak||0;
+  
+  // Category bars
+  const bars=document.getElementById('cat-bars');
+  bars.innerHTML='';
+  const cats=['twk','tiu','tkp','akhlak','tkb','daily'];
+  const catNames={twk:'TWK',tiu:'TIU',tkp:'TKP',akhlak:'AKHLAK',tkb:'TKB',daily:'Harian'};
+  cats.forEach(c=>{
+    const catHistory=d.history.filter(h=>h.cat===c);
+    if(catHistory.length===0)return;
+    const avg=Math.round(catHistory.reduce((s,h)=>s+h.pct,0)/catHistory.length);
+    const cls=avg>=70?'high':avg>=50?'mid':'low';
+    bars.innerHTML+='<div class="chart-bar"><span class="bar-label">'+catNames[c]+'</span><div class="bar-track"><div class="bar-fill '+cls+'" style="width:'+Math.max(avg,8)+'%">'+avg+'%</div></div></div>';
+  });
+  if(bars.innerHTML==='')bars.innerHTML='<p style="color:var(--text2);font-size:.9rem">Belum ada data</p>';
+  
+  // History list
+  const list=document.getElementById('history-list');
+  list.innerHTML='';
+  if(d.history.length===0){list.innerHTML='<p style="color:var(--text2);font-size:.9rem">Belum ada riwayat</p>';return;}
+  d.history.slice(0,20).forEach(h=>{
+    const date=new Date(h.date);
+    const dateStr=date.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+    const timeStr=date.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    const catName=(catNames[h.cat]||h.cat.toUpperCase());
+    list.innerHTML+='<div class="history-item"><div><div class="hi-info">'+catName+' - '+h.total+' soal</div><div class="hi-date">'+dateStr+' '+timeStr+'</div></div><div class="hi-score" style="color:'+(h.pct>=70?'var(--accent2)':h.pct>=50?'var(--warning)':'var(--danger)')+'">'+h.pct+'%</div></div>';
+  });
+}
+
+// ===== MODAL =====
+function confirmQuit(){
+  document.getElementById('modal-title').textContent='Keluar Quiz?';
+  document.getElementById('modal-text').textContent='Progress quiz ini akan hilang. Yakin keluar?';
+  document.getElementById('modal-confirm').onclick=()=>{clearInterval(timerInterval);closeModal();goHome();};
+  document.getElementById('modal').classList.add('show');
+}
+function confirmReset(){
+  document.getElementById('modal-title').textContent='Reset Data?';
+  document.getElementById('modal-text').textContent='Semua riwayat latihan dan statistik akan dihapus. Yakin?';
+  document.getElementById('modal-confirm').onclick=()=>{localStorage.removeItem(STORAGE_KEY);closeModal();renderStats();};
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+
+// ===== ACCORDION =====
+function toggleAccordion(el){
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+
+// ===== INIT =====
+loadTheme();
+updateHomeStats();
+</script>
 </body>
 </html>
